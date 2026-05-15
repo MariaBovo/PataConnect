@@ -5,6 +5,50 @@ $current_user = [
     'avatar' => 'https://ui-avatars.com/api/?name=Gustavo+Gava&background=2a2d35&color=fff' 
 ];
 ?>
+<header class="system-header">
+    <div class="header-left">
+        <div class="user-profile">
+            <img src="<?php echo htmlspecialchars($current_user['avatar']); ?>" alt="User Avatar">
+            <div class="user-info">
+                <span class="user-role"><?php echo htmlspecialchars($current_user['role']); ?></span>
+                <span class="user-name"><?php echo htmlspecialchars($current_user['name']); ?></span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="header-center">
+        <div class="live-datetime">
+            <span id="sys-clock">Carregando...</span>
+        </div>
+    </div>
+
+    <div class="header-right">
+        
+        <a href="#" class="header-icon" title="Notifications">🔔</a>
+
+        <a href="#" onclick="alert('Não implementado')" class="header-icon" title="System Settings">⚙️</a>
+
+    </div>
+</header>
+
+<script>
+    function updateSystemClock() {
+        const now = new Date();
+        const options = { 
+            weekday: 'short', 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric', 
+            hour: '2-digit', 
+            minute: '2-digit', 
+            second: '2-digit' 
+        };
+        document.getElementById('sys-clock').textContent = now.toLocaleDateString('pt-BR', options);
+    }
+    updateSystemClock();
+    setInterval(updateSystemClock, 1000);
+</script>
+
 <style>
     .system-header {
         display: flex;
@@ -87,47 +131,3 @@ $current_user = [
         color: #868e96;
     }
 </style>
-
-<header class="system-header">
-    <div class="header-left">
-        <div class="user-profile">
-            <img src="<?php echo htmlspecialchars($current_user['avatar']); ?>" alt="User Avatar">
-            <div class="user-info">
-                <span class="user-role"><?php echo htmlspecialchars($current_user['role']); ?></span>
-                <span class="user-name"><?php echo htmlspecialchars($current_user['name']); ?></span>
-            </div>
-        </div>
-    </div>
-    
-    <div class="header-center">
-        <div class="live-datetime">
-            <span id="sys-clock">Carregando...</span>
-        </div>
-    </div>
-
-    <div class="header-right">
-        
-        <a href="#" class="header-icon" title="Notifications">🔔</a>
-
-        <a href="settings.php" class="header-icon" title="System Settings">⚙️</a>
-
-    </div>
-</header>
-
-<script>
-    function updateSystemClock() {
-        const now = new Date();
-        const options = { 
-            weekday: 'short', 
-            year: 'numeric', 
-            month: 'short', 
-            day: 'numeric', 
-            hour: '2-digit', 
-            minute: '2-digit', 
-            second: '2-digit' 
-        };
-        document.getElementById('sys-clock').textContent = now.toLocaleDateString('pt-BR', options);
-    }
-    updateSystemClock();
-    setInterval(updateSystemClock, 1000);
-</script>

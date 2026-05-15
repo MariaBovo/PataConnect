@@ -21,17 +21,6 @@ require_once('../components/head.php');
             ));
 
             echo(component_card(
-                "Registrar", 
-                "NOVO RESGATE", 
-                "", 
-                "",  
-                "#212529",
-                "#e8f4f8",
-                "transparent",
-                "/dispatch/form.php"
-            ));
-
-            echo(component_card(
                 "Listagem de animais", 
                 "EM QUARENTENA", 
                 "", 
@@ -39,25 +28,33 @@ require_once('../components/head.php');
                 "#212529",
                 "#e8f4f8",
                 "transparent",
-                "/listagem/quarentena.php"
+                "/pets/quarentena.php"
             ));
+
             echo(component_card(
                 "Listagem de animais", 
-                "NÃO RESGATADOS", 
+                "ADOTADOS", 
                 "", 
                 "",  
                 "#212529",
                 "#e8f4f8",
                 "transparent",
-                "/listagem"
+                "/pets/adotados.php"
             ));
         ?>
     </div>
     <hr style="border-color: #333; margin-bottom: 2rem;">
     <div class="incidents-wrapper">
         <div class="page-header">
-            <h2>Resgates pendentes</h2>
+            <h2>Listagem de Animais</h2>
             <div class="header-actions">
+                <button class="btn-action btn-secondary">Gatil</button>
+                <button class="btn-action btn-secondary">Quadra A</button>
+                <button class="btn-action btn-secondary">Quadra B</button>
+                <button class="btn-action btn-secondary">Quadra C</button>
+                <button class="btn-action btn-secondary">Quadra D</button>
+                <button class="btn-action btn-secondary">Quadra E</button>
+                <hr>
                 <button class="btn-action btn-secondary">🔄 Atualizar</button>
             </div>
         </div>
@@ -67,9 +64,10 @@ require_once('../components/head.php');
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Detalhes</th>
-                        <th>Localização</th>
-                        <th>Prioridade</th>
+                        <th>Nome</th>
+                        <th>Sexo</th>
+                        <th>Raça</th>
+                        <th>Local</th>
                         <th style="text-align: right;">Ações</th>
                     </tr>
                 </thead>
@@ -80,68 +78,69 @@ require_once('../components/head.php');
                             <span class="text-muted">15 min atrás</span>
                         </td>
                         <td>
-                            <strong>Canino</strong>
-                            <span class="text-muted">Agressivo, atacando pedestres</span>
+                            <strong>Armando</strong>
+                            <span class="text-muted badge-high">Extremamente violento</span>
                         </td>
                         <td>
-                            Av. Brasil, 1500
-                            <span class="text-muted">Centro</span>
+                            <strong>Fêmea</strong>
                         </td>
                         <td>
-                            <span class="badge badge-high">High</span>
+                            <strong>Yorkshire Terrierista</strong>
+                        </td>
+                        <td>
+                            <strong>Quadra E - Canil 427</strong>
                         </td>
                         <td>
                             <div class="actions-cell">
-                                <button class="btn-action btn-secondary" title="Mais detalhes">Mais detalhes</button>
-                                <button class="btn-action btn-primary" title="Encerrar">Encerrar</button>
+                                <button class="btn-action btn-primary" title="Abrir Ficha">Abrir Ficha</button>
                             </div>
                         </td>
                     </tr>
-
                     <tr>
                         <td>
-                            <strong>#INC-1041</strong>
-                            <span class="text-muted">45 min atrás</span>
+                            <strong>#INC-2080</strong>
+                            <span class="text-muted">15 min atrás</span>
                         </td>
                         <td>
-                            <strong>Felino</strong>
-                            <span class="text-muted">Ferido, escondido embaixo de um carro</span>
+                            <strong>Augusto</strong>
+                            <span class="text-muted badge-low">dibas</span>
                         </td>
                         <td>
-                            Rua M 4, 850
-                            <span class="text-muted">Jardim Floridiana</span>
+                            <strong>Macho</strong>
                         </td>
                         <td>
-                            <span class="badge badge-medium">Médio</span>
+                            <strong>Vira-lata</strong>
+                        </td>
+                        <td>
+                            <strong>Quadra B - Canil 12</strong>
                         </td>
                         <td>
                             <div class="actions-cell">
-                                <button class="btn-action btn-secondary" title="Mais detalhes">Mais detalhes</button>
-                                <button class="btn-action btn-primary" title="Encerrar">Encerrar</button>
+                                <button class="btn-action btn-primary" title="Abrir Ficha">Abrir Ficha</button>
                             </div>
                         </td>
                     </tr>
-
                     <tr>
                         <td>
-                            <strong>#INC-1039</strong>
-                            <span class="text-muted">2 horas atrás</span>
+                            <strong>#INC-7429</strong>
+                            <span class="text-muted">15 min atrás</span>
                         </td>
                         <td>
-                            <strong>Multiplos Animais</strong>
-                            <span class="text-muted">Pedido de recolhimento</span>
+                            <strong>Antônia</strong>
+                            <span class="text-muted badge-medium">Cêgo</span>
                         </td>
                         <td>
-                            Rua 14, 220
-                            <span class="text-muted">Consolação</span>
+                            <strong>Macho</strong>
                         </td>
                         <td>
-                            <span class="badge badge-low">Baixa</span>
+                            <strong>Golden Retriever</strong>
+                        </td>
+                        <td>
+                            <strong>Quadra A - Canil 16</strong>
                         </td>
                         <td>
                             <div class="actions-cell">
-                                <button class="btn-action btn-secondary" title="Mais detalhes">Mais detalhes</button>
-                                <button class="btn-action btn-primary" title="Encerrar">Encerrar</button>
+                                <button class="btn-action btn-primary" title="Abrir Ficha">Abrir Ficha</button>
                             </div>
                         </td>
                     </tr>
@@ -278,12 +277,12 @@ require_once('../components/head.php');
     }
 
     .btn-primary {
-        background-color: #8a2b3e;
+        background-color: #2b8a3e;
         color: white;
     }
 
     .btn-primary:hover {
-        background-color: #702332;
+        background-color: #237032;
     }
 
     .btn-secondary {
