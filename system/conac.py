@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from date import datetime
+from datetime import date
 
 @dataclass
 class CONAC:
@@ -18,7 +18,7 @@ class user:
     id: int
     full_name: str
     username: str
-    created: datetime
+    created: date
     privileged: bool
     
 @dataclass
