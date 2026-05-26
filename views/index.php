@@ -42,6 +42,17 @@ require_once('./components/head.php');
                 "transparent",
                 "/deposit"
             ));
+
+            echo(component_card(
+                "Estoque Inteligente",
+                "Previsões IA",
+                "📦",
+                "dias restantes e alerta de compra",
+                "#e8f4f8",
+                "#212529",
+                "transparent",
+                "/analytics/dashboard.php"
+            ));
         ?>
     </div>
     <hr>
@@ -134,7 +145,7 @@ require_once('./components/head.php');
 <style>
     .dashboard-grid {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(4, 1fr);
         gap: 1.5rem;
         width: 100%;
     }
