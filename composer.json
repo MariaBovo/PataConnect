@@ -1,0 +1,33 @@
+{
+  "name": "pata/connect",
+  "description": "Sistema Pata para autenticacao, atendimento e gestao de animais.",
+  "type": "project",
+  "license": "proprietary",
+  "require": {
+    "php": ">=8.2",
+    "ext-json": "*",
+    "ext-pdo": "*",
+    "ext-session": "*"
+  },
+  "suggest": {
+    "ext-pdo_pgsql": "Recomendado para usar o banco PostgreSQL padrao do projeto.",
+    "ext-pdo_sqlite": "Util para ambientes locais temporarios com SQLite.",
+    "ext-pdo_mysql": "Util caso o DSN PATA_DB_DSN seja configurado para MySQL."
+  },
+  "scripts": {
+    "lint": [
+      "@php -l system/condb.php",
+      "@php -l system/auth.php",
+      "@php -l views/login.php",
+      "@php -l views/index.php",
+      "@php -l views/utils/init.php"
+    ],
+    "serve": "@php -S 127.0.0.1:8000 -t views"
+  },
+  "config": {
+    "sort-packages": true,
+    "platform-check": true
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true
+}

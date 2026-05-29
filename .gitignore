@@ -215,5 +215,9 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
+# Composer
+vendor/
+
 # Local PHP runtime state
 storage/sessions/
+storage/cache/
