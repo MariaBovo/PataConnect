@@ -1,17 +1,27 @@
 <?php
-$current_user = [
-    'name' => 'Gustavo Bonin Gava',
-    'role' => 'Veterinário',
-    'avatar' => 'https://ui-avatars.com/api/?name=Gustavo+Gava&background=2a2d35&color=fff' 
-];
+$current_user = pata_current_user();
+if ($current_user === null) {
+    $current_user = [
+        'full_name' => 'Pata',
+        'username' => 'pata',
+        'privileged' => false,
+    ];
+}
+$user_role = $current_user['privileged'] ? 'Administrador' : 'Operador';
+$user_name = $current_user['full_name'];
+$user_initials = pata_user_initials($current_user);
 ?>
 <header class="system-header">
     <div class="header-left">
+        <a href="/" class="brand-logo" aria-label="Inicio do Pata">
+            <span class="brand-mark">P</span>
+            <span>Pata</span>
+        </a>
         <div class="user-profile">
-            <img src="<?php echo htmlspecialchars($current_user['avatar']); ?>" alt="User Avatar">
+            <div class="user-avatar" aria-hidden="true"><?php echo htmlspecialchars($user_initials); ?></div>
             <div class="user-info">
-                <span class="user-role"><?php echo htmlspecialchars($current_user['role']); ?></span>
-                <span class="user-name"><?php echo htmlspecialchars($current_user['name']); ?></span>
+                <span class="user-role"><?php echo htmlspecialchars($user_role); ?></span>
+                <span class="user-name"><?php echo htmlspecialchars($user_name); ?></span>
             </div>
         </div>
     </div>
@@ -24,9 +34,11 @@ $current_user = [
 
     <div class="header-right">
         
-        <a href="#" class="header-icon" title="Notifications">🔔</a>
+        <a href="#" class="header-icon" title="Notificacoes">🔔</a>
 
-        <a href="#" onclick="alert('Não implementado')" class="header-icon" title="System Settings">⚙️</a>
+        <a href="#" onclick="alert('Nao implementado')" class="header-icon" title="Configuracoes">⚙️</a>
+
+        <a href="/logout.php" class="logout-link" title="Encerrar sessao">Sair</a>
 
     </div>
 </header>
@@ -69,10 +81,26 @@ $current_user = [
     }
     
     .brand-logo {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
         font-size: 1.25rem;
         font-weight: 800;
-        letter-spacing: 0.5px;
-        color: #e8f4f8;
+        color: #f2f5f7;
+        text-decoration: none;
+        padding-right: 1.5rem;
+        border-right: 1px solid #333333;
+    }
+
+    .brand-mark {
+        display: inline-grid;
+        place-items: center;
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        background: #7cc7aa;
+        color: #12141a;
+        font-weight: 900;
     }
 
     .live-datetime {
@@ -104,14 +132,19 @@ $current_user = [
         display: flex;
         align-items: center;
         gap: 0.75rem;
-        padding-right: 1.5rem;
     }
 
-    .user-profile img {
+    .user-avatar {
+        display: grid;
+        place-items: center;
         width: 38px;
         height: 38px;
         border-radius: 50%;
-        border: 2px solid #333333;
+        border: 1px solid rgba(124, 199, 170, 0.45);
+        background: #24372f;
+        color: #dff8ed;
+        font-weight: 800;
+        font-size: 0.82rem;
     }
 
     .user-info {
@@ -129,5 +162,42 @@ $current_user = [
     .user-role {
         font-size: 0.75rem;
         color: #868e96;
+    }
+
+    .logout-link {
+        color: #f2f5f7;
+        border: 1px solid #454a55;
+        border-radius: 6px;
+        padding: 0.42rem 0.75rem;
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 700;
+        transition: background-color 0.2s, border-color 0.2s;
+    }
+
+    .logout-link:hover {
+        background-color: #242730;
+        border-color: #7cc7aa;
+    }
+
+    @media (max-width: 760px) {
+        .system-header {
+            align-items: flex-start;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .header-left,
+        .header-center,
+        .header-right {
+            width: 100%;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .brand-logo {
+            border-right: 0;
+            padding-right: 0;
+        }
     }
 </style>
