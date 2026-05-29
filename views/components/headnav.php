@@ -28,38 +28,35 @@ $user_initials = pata_user_initials($current_user);
     
     <div class="header-center">
         <div class="live-datetime">
-            <span id="sys-clock">Carregando...</span>
+            <span><?php echo htmlspecialchars(date('d/m/Y H:i:s')); ?></span>
         </div>
     </div>
 
     <div class="header-right">
         
-        <a href="#" class="header-icon" title="Notificacoes">🔔</a>
+        <form class="header-action-form" method="POST" action="<?php echo pata_form_action(); ?>">
+            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(pata_csrf_token()); ?>">
+            <button type="submit" name="action" value="hydrate_notifications" class="header-icon" title="Notificacoes">🔔</button>
+        </form>
 
-        <a href="#" onclick="alert('Nao implementado')" class="header-icon" title="Configuracoes">⚙️</a>
+        <form class="header-action-form" method="POST" action="<?php echo pata_form_action(); ?>">
+            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(pata_csrf_token()); ?>">
+            <button type="submit" name="action" value="hydrate_settings" class="header-icon" title="Configuracoes">⚙️</button>
+        </form>
 
-        <a href="/logout.php" class="logout-link" title="Encerrar sessao">Sair</a>
+        <form class="logout-form" method="POST" action="<?php echo pata_form_action(); ?>">
+            <input type="hidden" name="_method" value="DELETE">
+            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(pata_csrf_token()); ?>">
+            <button type="submit" name="action" value="logout" class="logout-link" title="Encerrar sessao">Sair</button>
+        </form>
 
     </div>
 </header>
-
-<script>
-    function updateSystemClock() {
-        const now = new Date();
-        const options = { 
-            weekday: 'short', 
-            year: 'numeric', 
-            month: 'short', 
-            day: 'numeric', 
-            hour: '2-digit', 
-            minute: '2-digit', 
-            second: '2-digit' 
-        };
-        document.getElementById('sys-clock').textContent = now.toLocaleDateString('pt-BR', options);
-    }
-    updateSystemClock();
-    setInterval(updateSystemClock, 1000);
-</script>
+<?php if (!empty($page['error']) || !empty($page['notice'])): ?>
+    <div class="page-feedback <?php echo !empty($page['error']) ? 'page-feedback-error' : 'page-feedback-success'; ?>">
+        <?php echo htmlspecialchars($page['error'] ?? $page['notice']); ?>
+    </div>
+<?php endif; ?>
 
 <style>
     .system-header {
@@ -114,6 +111,9 @@ $user_initials = pata_user_initials($current_user);
     }
 
     .header-icon {
+        appearance: none;
+        background: transparent;
+        border: 0;
         color: #adb5bd;
         font-size: 1.2rem;
         text-decoration: none;
@@ -121,6 +121,7 @@ $user_initials = pata_user_initials($current_user);
         display: flex;
         align-items: center;
         cursor: pointer;
+        padding: 0;
     }
 
     .header-icon:hover {
@@ -165,6 +166,8 @@ $user_initials = pata_user_initials($current_user);
     }
 
     .logout-link {
+        appearance: none;
+        background: transparent;
         color: #f2f5f7;
         border: 1px solid #454a55;
         border-radius: 6px;
@@ -172,12 +175,41 @@ $user_initials = pata_user_initials($current_user);
         text-decoration: none;
         font-size: 0.85rem;
         font-weight: 700;
+        font-family: inherit;
+        cursor: pointer;
         transition: background-color 0.2s, border-color 0.2s;
+    }
+
+    .header-action-form,
+    .logout-form {
+        margin: 0;
     }
 
     .logout-link:hover {
         background-color: #242730;
         border-color: #7cc7aa;
+    }
+
+    .page-feedback {
+        max-width: 1200px;
+        margin: 1rem auto 0;
+        padding: 0.85rem 1rem;
+        border-radius: 8px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-size: 0.92rem;
+        font-weight: 700;
+    }
+
+    .page-feedback-success {
+        color: #dff8ed;
+        background: rgba(68, 166, 106, 0.15);
+        border: 1px solid rgba(68, 166, 106, 0.45);
+    }
+
+    .page-feedback-error {
+        color: #ffe0e0;
+        background: rgba(250, 82, 82, 0.14);
+        border: 1px solid rgba(250, 82, 82, 0.42);
     }
 
     @media (max-width: 760px) {

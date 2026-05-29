@@ -1,6 +1,10 @@
 <?php
 require_once __DIR__ . '/../../system/auth.php';
-pata_require_login();
+$page = pata_page_start();
+
+if ($page['error'] === null && $page['notice'] === null && $page['method'] === 'POST' && $page['action'] === 'refresh_forecast') {
+    $page['notice'] = 'Previsao de estoque reidratada nesta pagina.';
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -83,6 +87,10 @@ $next_priority = $summary['next_purchase_priority'] ?? '-';
             <div class="model-status">
                 <span>Gerado em <?php echo htmlspecialchars($forecast['generated_at'] ?? 'pendente'); ?></span>
                 <span><?php echo htmlspecialchars($model['name'] ?? 'modelo pendente'); ?></span>
+                <form method="POST" action="<?php echo pata_form_action(); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(pata_csrf_token()); ?>">
+                    <button type="submit" name="action" value="refresh_forecast">Atualizar</button>
+                </form>
             </div>
         </div>
 
@@ -215,17 +223,34 @@ $next_priority = $summary['next_purchase_priority'] ?? '-';
 
     .model-status {
         display: flex;
+        align-items: center;
         gap: 0.75rem;
         color: #adb5bd;
         font-size: 0.85rem;
     }
 
     .model-status span,
+    .model-status button,
     .empty-state {
         background: #1a1c23;
         border: 1px solid #333333;
         border-radius: 0.5rem;
         padding: 0.6rem 0.8rem;
+    }
+
+    .model-status form {
+        margin: 0;
+    }
+
+    .model-status button {
+        color: #f2f5f7;
+        font: inherit;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    .model-status button:hover {
+        border-color: #7cc7aa;
     }
 
     .stock-grid {

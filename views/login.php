@@ -1,16 +1,28 @@
 <?php
 require_once __DIR__ . '/../system/auth.php';
 
+$method = pata_request_method();
+
 $error = null;
 $notice = isset($_GET['logged_out']) ? 'Sessao encerrada com seguranca.' : null;
 $redirect = pata_sanitize_redirect($_GET['redirect'] ?? '/');
 
-if (pata_is_authenticated()) {
+if ($method === 'DELETE') {
+    if (!pata_verify_csrf($_POST['csrf_token'] ?? null)) {
+        $error = 'Sessao expirada. Tente novamente.';
+    } else {
+        pata_logout();
+        header('Location: /login.php?logged_out=1');
+        exit;
+    }
+}
+
+if ($method === 'GET' && pata_is_authenticated()) {
     header('Location: ' . $redirect);
     exit;
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($method === 'POST') {
     $redirect = pata_sanitize_redirect($_POST['redirect'] ?? '/');
 
     if (!pata_verify_csrf($_POST['csrf_token'] ?? null)) {
@@ -25,6 +37,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $error = $result['message'];
     }
+} elseif (!in_array($method, ['GET', 'DELETE'], true)) {
+    http_response_code(405);
+    $error = 'Metodo HTTP nao permitido para esta tela.';
 }
 ?>
 <!DOCTYPE html>

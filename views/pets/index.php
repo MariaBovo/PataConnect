@@ -1,6 +1,23 @@
 <?php
 require_once __DIR__ . '/../../system/auth.php';
-pata_require_login();
+$page = pata_page_start();
+
+$selected_area = trim((string) ($_POST['kennel_area'] ?? 'Todos'));
+
+if ($page['error'] === null && $page['notice'] === null) {
+    if ($page['method'] === 'POST' && $page['action'] === 'filter_pets') {
+        $page['notice'] = "Listagem de animais hidratada para {$selected_area}.";
+    }
+
+    if ($page['method'] === 'POST' && $page['action'] === 'refresh_pets') {
+        $page['notice'] = 'Listagem de animais reidratada nesta pagina.';
+    }
+
+    if ($page['method'] === 'POST' && $page['action'] === 'open_pet_record') {
+        $pet_id = (string) ($_POST['pet_id'] ?? '');
+        $page['notice'] = "Ficha do animal {$pet_id} carregada nesta pagina.";
+    }
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -52,14 +69,17 @@ require_once('../components/head.php');
         <div class="page-header">
             <h2>Listagem de Animais</h2>
             <div class="header-actions">
-                <button class="btn-action btn-secondary">Gatil</button>
-                <button class="btn-action btn-secondary">Quadra A</button>
-                <button class="btn-action btn-secondary">Quadra B</button>
-                <button class="btn-action btn-secondary">Quadra C</button>
-                <button class="btn-action btn-secondary">Quadra D</button>
-                <button class="btn-action btn-secondary">Quadra E</button>
-                <hr>
-                <button class="btn-action btn-secondary">🔄 Atualizar</button>
+                <?php foreach (['Gatil', 'Quadra A', 'Quadra B', 'Quadra C', 'Quadra D', 'Quadra E'] as $kennel_area): ?>
+                    <form method="POST" action="<?php echo pata_form_action(); ?>">
+                        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(pata_csrf_token()); ?>">
+                        <input type="hidden" name="kennel_area" value="<?php echo htmlspecialchars($kennel_area); ?>">
+                        <button type="submit" name="action" value="filter_pets" class="btn-action btn-secondary"><?php echo htmlspecialchars($kennel_area); ?></button>
+                    </form>
+                <?php endforeach; ?>
+                <form method="POST" action="<?php echo pata_form_action(); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(pata_csrf_token()); ?>">
+                    <button type="submit" name="action" value="refresh_pets" class="btn-action btn-secondary">🔄 Atualizar</button>
+                </form>
             </div>
         </div>
 
@@ -69,21 +89,25 @@ require_once('../components/head.php');
                     <tr>
                         <th>ID</th>
                         <th>Nome</th>
+                        <th>Espécie</th>
                         <th>Sexo</th>
                         <th>Raça</th>
-                        <th>Local</th>
+                        <th>Porte / Cor</th>
                         <th style="text-align: right;">Ações</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>
-                            <strong>#INC-1042</strong>
+                            <strong>#PET-1042</strong>
                             <span class="text-muted">15 min atrás</span>
                         </td>
                         <td>
                             <strong>Armando</strong>
                             <span class="text-muted badge-high">Extremamente violento</span>
+                        </td>
+                        <td>
+                            <strong>Canino</strong>
                         </td>
                         <td>
                             <strong>Fêmea</strong>
@@ -92,22 +116,30 @@ require_once('../components/head.php');
                             <strong>Yorkshire Terrierista</strong>
                         </td>
                         <td>
-                            <strong>Quadra E - Canil 427</strong>
+                            <strong>Pequeno</strong>
+                            <span class="text-muted">Caramelo</span>
                         </td>
                         <td>
                             <div class="actions-cell">
-                                <button class="btn-action btn-primary" title="Abrir Ficha">Abrir Ficha</button>
+                                <form method="POST" action="<?php echo pata_form_action(); ?>">
+                                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(pata_csrf_token()); ?>">
+                                    <input type="hidden" name="pet_id" value="#PET-1042">
+                                    <button type="submit" name="action" value="open_pet_record" class="btn-action btn-primary" title="Abrir Ficha">Abrir Ficha</button>
+                                </form>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <strong>#INC-2080</strong>
+                            <strong>#PET-2080</strong>
                             <span class="text-muted">15 min atrás</span>
                         </td>
                         <td>
                             <strong>Augusto</strong>
                             <span class="text-muted badge-low">dibas</span>
+                        </td>
+                        <td>
+                            <strong>Canino</strong>
                         </td>
                         <td>
                             <strong>Macho</strong>
@@ -116,22 +148,30 @@ require_once('../components/head.php');
                             <strong>Vira-lata</strong>
                         </td>
                         <td>
-                            <strong>Quadra B - Canil 12</strong>
+                            <strong>Médio</strong>
+                            <span class="text-muted">Preto</span>
                         </td>
                         <td>
                             <div class="actions-cell">
-                                <button class="btn-action btn-primary" title="Abrir Ficha">Abrir Ficha</button>
+                                <form method="POST" action="<?php echo pata_form_action(); ?>">
+                                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(pata_csrf_token()); ?>">
+                                    <input type="hidden" name="pet_id" value="#PET-2080">
+                                    <button type="submit" name="action" value="open_pet_record" class="btn-action btn-primary" title="Abrir Ficha">Abrir Ficha</button>
+                                </form>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <strong>#INC-7429</strong>
+                            <strong>#PET-7429</strong>
                             <span class="text-muted">15 min atrás</span>
                         </td>
                         <td>
                             <strong>Antônia</strong>
                             <span class="text-muted badge-medium">Cêgo</span>
+                        </td>
+                        <td>
+                            <strong>Canino</strong>
                         </td>
                         <td>
                             <strong>Macho</strong>
@@ -140,11 +180,16 @@ require_once('../components/head.php');
                             <strong>Golden Retriever</strong>
                         </td>
                         <td>
-                            <strong>Quadra A - Canil 16</strong>
+                            <strong>Grande</strong>
+                            <span class="text-muted">Dourado</span>
                         </td>
                         <td>
                             <div class="actions-cell">
-                                <button class="btn-action btn-primary" title="Abrir Ficha">Abrir Ficha</button>
+                                <form method="POST" action="<?php echo pata_form_action(); ?>">
+                                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(pata_csrf_token()); ?>">
+                                    <input type="hidden" name="pet_id" value="#PET-7429">
+                                    <button type="submit" name="action" value="open_pet_record" class="btn-action btn-primary" title="Abrir Ficha">Abrir Ficha</button>
+                                </form>
                             </div>
                         </td>
                     </tr>
@@ -184,6 +229,12 @@ require_once('../components/head.php');
     .header-actions {
         display: flex;
         gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .header-actions form,
+    .actions-cell form {
+        margin: 0;
     }
 
     .table-card {

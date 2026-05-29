@@ -9,6 +9,16 @@ function pata_start_session(): void
         return;
     }
 
+    $session_path = dirname(__DIR__) . '/storage/sessions';
+
+    if (!is_dir($session_path)) {
+        @mkdir($session_path, 0770, true);
+    }
+
+    if (is_dir($session_path) && is_writable($session_path)) {
+        session_save_path($session_path);
+    }
+
     session_name('PATASESSID');
 
     if (!headers_sent()) {
@@ -101,7 +111,7 @@ function pata_login(string $username, string $password): array
     $username = trim($username);
 
     if ($username === '' || $password === '') {
-        return ['ok' => false, 'message' => 'Preencha usuário e senha para entrar.'];
+        return ['ok' => false, 'message' => 'Preencha usuario e senha para entrar.'];
     }
 
     $local_user = pata_local_login_user($username, $password);
@@ -119,7 +129,7 @@ function pata_login(string $username, string $password): array
     }
 
     if ($user === null || !password_verify($password, (string) $user['pass_hash'])) {
-        return ['ok' => false, 'message' => 'Usuário ou senha invalidos.'];
+        return ['ok' => false, 'message' => 'Usuario ou senha invalidos.'];
     }
 
     pata_set_authenticated_user($user);
@@ -147,7 +157,7 @@ function pata_sanitize_redirect(?string $redirect): string
         return '/';
     }
 
-    if (strpos($redirect, '/login.php') === 0 || strpos($redirect, '/logout.php') === 0) {
+    if (strpos($redirect, '/login.php') === 0) {
         return '/';
     }
 
@@ -181,6 +191,96 @@ function pata_verify_csrf(?string $token): bool
     pata_start_session();
 
     return is_string($token) && isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token);
+}
+
+function pata_request_method(): string
+{
+    $method = strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? 'GET'));
+
+    if ($method === 'POST') {
+        $override = $_POST['_method'] ?? ($_SERVER['HTTP_X_HTTP_METHOD_OVERRIDE'] ?? '');
+
+        if (is_string($override) && $override !== '') {
+            $override = strtoupper($override);
+
+            if (in_array($override, ['PUT', 'PATCH', 'DELETE'], true)) {
+                return $override;
+            }
+        }
+    }
+
+    return $method;
+}
+
+function pata_current_uri(): string
+{
+    $uri = $_SERVER['REQUEST_URI'] ?? '/';
+
+    return $uri !== '' ? $uri : '/';
+}
+
+function pata_form_action(): string
+{
+    return htmlspecialchars(pata_current_uri(), ENT_QUOTES, 'UTF-8');
+}
+
+function pata_page_state(array $allowed_methods = ['GET', 'POST', 'PATCH', 'PUT', 'DELETE']): array
+{
+    $method = pata_request_method();
+    $state = [
+        'method' => $method,
+        'action' => trim((string) ($_POST['action'] ?? '')),
+        'notice' => null,
+        'error' => null,
+    ];
+
+    if (!in_array($method, $allowed_methods, true)) {
+        http_response_code(405);
+        $state['error'] = 'Metodo HTTP nao permitido para esta pagina.';
+
+        return $state;
+    }
+
+    if ($method !== 'GET' && !pata_verify_csrf($_POST['csrf_token'] ?? null)) {
+        $state['error'] = 'Sessao expirada. Recarregue a pagina e tente novamente.';
+    }
+
+    return $state;
+}
+
+function pata_handle_common_page_action(array &$state): void
+{
+    if ($state['error'] !== null) {
+        return;
+    }
+
+    if ($state['method'] === 'DELETE' && $state['action'] === 'logout') {
+        pata_logout();
+        header('Location: /login.php?logged_out=1');
+        exit;
+    }
+
+    if ($state['method'] !== 'POST') {
+        return;
+    }
+
+    if ($state['action'] === 'hydrate_notifications') {
+        $state['notice'] = 'Notificacoes atualizadas nesta pagina.';
+    }
+
+    if ($state['action'] === 'hydrate_settings') {
+        $state['notice'] = 'Configuracoes carregadas nesta pagina.';
+    }
+}
+
+function pata_page_start(array $allowed_methods = ['GET', 'POST', 'PATCH', 'PUT', 'DELETE']): array
+{
+    pata_require_login();
+
+    $state = pata_page_state($allowed_methods);
+    pata_handle_common_page_action($state);
+
+    return $state;
 }
 
 function pata_user_initials(array $user): string

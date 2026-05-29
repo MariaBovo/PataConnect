@@ -1,6 +1,17 @@
 <?php
 require_once __DIR__ . '/../../system/auth.php';
-pata_require_login();
+$page = pata_page_start();
+
+if ($page['error'] === null && $page['notice'] === null) {
+    if ($page['method'] === 'POST' && $page['action'] === 'refresh_adopted') {
+        $page['notice'] = 'Listagem de adotados reidratada nesta pagina.';
+    }
+
+    if ($page['method'] === 'POST' && $page['action'] === 'open_pet_record') {
+        $pet_id = (string) ($_POST['pet_id'] ?? '');
+        $page['notice'] = "Ficha do animal {$pet_id} carregada nesta pagina.";
+    }
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -30,7 +41,10 @@ require_once('../components/head.php');
         <div class="page-header">
             <h2>Listagem de Animais Adotados</h2>
             <div class="header-actions">
-                <button class="btn-action btn-secondary">🔄 Atualizar</button>
+                <form method="POST" action="<?php echo pata_form_action(); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(pata_csrf_token()); ?>">
+                    <button type="submit" name="action" value="refresh_adopted" class="btn-action btn-secondary">🔄 Atualizar</button>
+                </form>
             </div>
         </div>
 
@@ -40,15 +54,16 @@ require_once('../components/head.php');
                     <tr>
                         <th>ID</th>
                         <th>Nome</th>
+                        <th>Espécie</th>
                         <th>Raça</th>
-                        <th>Data de adoção</th>
+                        <th>Tipo / Data do registro</th>
                         <th style="text-align: right;">Ações</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>
-                            <strong>#INC-1042</strong>
+                            <strong>#PET-1042</strong>
                             <span class="text-muted">15 min atrás</span>
                         </td>
                         <td>
@@ -56,20 +71,28 @@ require_once('../components/head.php');
                             <span class="text-muted badge-high">Extremamente violento</span>
                         </td>
                         <td>
+                            <strong>Canino</strong>
+                        </td>
+                        <td>
                             <strong>Yorkshire Terrierista</strong>
                         </td>
                         <td>
-                            <strong>14/07/2028</strong>
+                            <strong>Adoção</strong>
+                            <span class="text-muted">14/07/2028</span>
                         </td>
                         <td>
                             <div class="actions-cell">
-                                <button class="btn-action btn-primary" title="Abrir Ficha">Abrir Ficha</button>
+                                <form method="POST" action="<?php echo pata_form_action(); ?>">
+                                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(pata_csrf_token()); ?>">
+                                    <input type="hidden" name="pet_id" value="#PET-1042">
+                                    <button type="submit" name="action" value="open_pet_record" class="btn-action btn-primary" title="Abrir Ficha">Abrir Ficha</button>
+                                </form>
                             </div>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <strong>#INC-2080</strong>
+                            <strong>#PET-2080</strong>
                             <span class="text-muted">15 min atrás</span>
                         </td>
                         <td>
@@ -77,14 +100,22 @@ require_once('../components/head.php');
                             <span class="text-muted badge-low">dibas</span>
                         </td>
                         <td>
+                            <strong>Canino</strong>
+                        </td>
+                        <td>
                             <strong>Vira-lata</strong>
                         </td>
                         <td>
-                            <strong>14/07/2028</strong>
+                            <strong>Adoção</strong>
+                            <span class="text-muted">14/07/2028</span>
                         </td>
                         <td>
                             <div class="actions-cell">
-                                <button class="btn-action btn-primary" title="Abrir Ficha">Abrir Ficha</button>
+                                <form method="POST" action="<?php echo pata_form_action(); ?>">
+                                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(pata_csrf_token()); ?>">
+                                    <input type="hidden" name="pet_id" value="#PET-2080">
+                                    <button type="submit" name="action" value="open_pet_record" class="btn-action btn-primary" title="Abrir Ficha">Abrir Ficha</button>
+                                </form>
                             </div>
                         </td>
                     </tr>
@@ -124,6 +155,11 @@ require_once('../components/head.php');
     .header-actions {
         display: flex;
         gap: 1rem;
+    }
+
+    .header-actions form,
+    .actions-cell form {
+        margin: 0;
     }
 
     .table-card {

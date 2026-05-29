@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../system/auth.php';
-pata_require_login();
+$page = pata_page_start();
 ?>
 <!DOCTYPE html>
 <html>
@@ -15,10 +15,10 @@ require_once('./components/head.php');
     <div class="dashboard-grid">
         <?php
             echo(component_card(
-                "Listagem de resgates", 
+                "Fichas de atendimento",
                 "12", 
                 "🚐", 
-                "Resgates em andamento", 
+                "Solicitacoes abertas",
                 "#e8f4f8", 
                 "#212529",
                 "transparent",

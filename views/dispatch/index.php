@@ -1,6 +1,22 @@
 <?php
 require_once __DIR__ . '/../../system/auth.php';
-pata_require_login();
+$page = pata_page_start();
+
+if ($page['error'] === null && $page['notice'] === null) {
+    if ($page['method'] === 'POST' && $page['action'] === 'refresh_service_records') {
+        $page['notice'] = 'Fichas de atendimento reidratadas nesta pagina.';
+    }
+
+    if ($page['method'] === 'POST' && $page['action'] === 'service_record_details') {
+        $service_record_id = (string) ($_POST['service_record_id'] ?? '');
+        $page['notice'] = "Ficha de atendimento {$service_record_id} carregada nesta pagina.";
+    }
+
+    if ($page['method'] === 'PATCH' && $page['action'] === 'close_service_record') {
+        $service_record_id = (string) ($_POST['service_record_id'] ?? '');
+        $page['notice'] = "Ficha de atendimento {$service_record_id} marcada para encerramento nesta pagina.";
+    }
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -26,7 +42,7 @@ require_once('../components/head.php');
 
             echo(component_card(
                 "Registrar", 
-                "NOVO RESGATE", 
+                "NOVA FICHA",
                 "", 
                 "",  
                 "#212529",
@@ -60,9 +76,12 @@ require_once('../components/head.php');
     <hr style="border-color: #333; margin-bottom: 2rem;">
     <div class="incidents-wrapper">
         <div class="page-header">
-            <h2>Resgates pendentes</h2>
+            <h2>Fichas de Atendimento Pendentes</h2>
             <div class="header-actions">
-                <button class="btn-action btn-secondary">🔄 Atualizar</button>
+                <form method="POST" action="<?php echo pata_form_action(); ?>">
+                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(pata_csrf_token()); ?>">
+                    <button type="submit" name="action" value="refresh_service_records" class="btn-action btn-secondary">🔄 Atualizar</button>
+                </form>
             </div>
         </div>
 
@@ -71,81 +90,111 @@ require_once('../components/head.php');
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Detalhes</th>
+                        <th>Solicitante</th>
                         <th>Localização</th>
-                        <th>Prioridade</th>
+                        <th>Animal Informado</th>
                         <th style="text-align: right;">Ações</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>
-                            <strong>#INC-1042</strong>
+                            <strong>#SR-1042</strong>
                             <span class="text-muted">15 min atrás</span>
                         </td>
                         <td>
-                            <strong>Canino</strong>
-                            <span class="text-muted">Agressivo, atacando pedestres</span>
+                            <strong>Maria Santos</strong>
+                            <span class="text-muted">(19) 99999-0000</span>
                         </td>
                         <td>
                             Av. Brasil, 1500
                             <span class="text-muted">Centro</span>
                         </td>
                         <td>
-                            <span class="badge badge-high">High</span>
+                            <strong>Canino</strong>
+                            <span class="text-muted">Macho, grande, caramelo</span>
                         </td>
                         <td>
                             <div class="actions-cell">
-                                <button class="btn-action btn-secondary" title="Mais detalhes">Mais detalhes</button>
-                                <button class="btn-action btn-primary" title="Encerrar">Encerrar</button>
+                                <form method="POST" action="<?php echo pata_form_action(); ?>">
+                                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(pata_csrf_token()); ?>">
+                                    <input type="hidden" name="service_record_id" value="#SR-1042">
+                                    <button type="submit" name="action" value="service_record_details" class="btn-action btn-secondary" title="Mais detalhes">Mais detalhes</button>
+                                </form>
+                                <form method="POST" action="<?php echo pata_form_action(); ?>">
+                                    <input type="hidden" name="_method" value="PATCH">
+                                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(pata_csrf_token()); ?>">
+                                    <input type="hidden" name="service_record_id" value="#SR-1042">
+                                    <button type="submit" name="action" value="close_service_record" class="btn-action btn-primary" title="Encerrar">Encerrar</button>
+                                </form>
                             </div>
                         </td>
                     </tr>
 
                     <tr>
                         <td>
-                            <strong>#INC-1041</strong>
+                            <strong>#SR-1041</strong>
                             <span class="text-muted">45 min atrás</span>
                         </td>
                         <td>
-                            <strong>Felino</strong>
-                            <span class="text-muted">Ferido, escondido embaixo de um carro</span>
+                            <strong>Joao Pereira</strong>
+                            <span class="text-muted">(19) 98888-1111</span>
                         </td>
                         <td>
                             Rua M 4, 850
                             <span class="text-muted">Jardim Floridiana</span>
                         </td>
                         <td>
-                            <span class="badge badge-medium">Médio</span>
+                            <strong>Felino</strong>
+                            <span class="text-muted">Fêmea, pequeno, preto</span>
                         </td>
                         <td>
                             <div class="actions-cell">
-                                <button class="btn-action btn-secondary" title="Mais detalhes">Mais detalhes</button>
-                                <button class="btn-action btn-primary" title="Encerrar">Encerrar</button>
+                                <form method="POST" action="<?php echo pata_form_action(); ?>">
+                                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(pata_csrf_token()); ?>">
+                                    <input type="hidden" name="service_record_id" value="#SR-1041">
+                                    <button type="submit" name="action" value="service_record_details" class="btn-action btn-secondary" title="Mais detalhes">Mais detalhes</button>
+                                </form>
+                                <form method="POST" action="<?php echo pata_form_action(); ?>">
+                                    <input type="hidden" name="_method" value="PATCH">
+                                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(pata_csrf_token()); ?>">
+                                    <input type="hidden" name="service_record_id" value="#SR-1041">
+                                    <button type="submit" name="action" value="close_service_record" class="btn-action btn-primary" title="Encerrar">Encerrar</button>
+                                </form>
                             </div>
                         </td>
                     </tr>
 
                     <tr>
                         <td>
-                            <strong>#INC-1039</strong>
+                            <strong>#SR-1039</strong>
                             <span class="text-muted">2 horas atrás</span>
                         </td>
                         <td>
-                            <strong>Multiplos Animais</strong>
-                            <span class="text-muted">Pedido de recolhimento</span>
+                            <strong>Lucia Almeida</strong>
+                            <span class="text-muted">(19) 97777-2222</span>
                         </td>
                         <td>
                             Rua 14, 220
                             <span class="text-muted">Consolação</span>
                         </td>
                         <td>
-                            <span class="badge badge-low">Baixa</span>
+                            <strong>Canino</strong>
+                            <span class="text-muted">Nao informado</span>
                         </td>
                         <td>
                             <div class="actions-cell">
-                                <button class="btn-action btn-secondary" title="Mais detalhes">Mais detalhes</button>
-                                <button class="btn-action btn-primary" title="Encerrar">Encerrar</button>
+                                <form method="POST" action="<?php echo pata_form_action(); ?>">
+                                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(pata_csrf_token()); ?>">
+                                    <input type="hidden" name="service_record_id" value="#SR-1039">
+                                    <button type="submit" name="action" value="service_record_details" class="btn-action btn-secondary" title="Mais detalhes">Mais detalhes</button>
+                                </form>
+                                <form method="POST" action="<?php echo pata_form_action(); ?>">
+                                    <input type="hidden" name="_method" value="PATCH">
+                                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(pata_csrf_token()); ?>">
+                                    <input type="hidden" name="service_record_id" value="#SR-1039">
+                                    <button type="submit" name="action" value="close_service_record" class="btn-action btn-primary" title="Encerrar">Encerrar</button>
+                                </form>
                             </div>
                         </td>
                     </tr>
@@ -185,6 +234,11 @@ require_once('../components/head.php');
     .header-actions {
         display: flex;
         gap: 1rem;
+    }
+
+    .header-actions form,
+    .actions-cell form {
+        margin: 0;
     }
 
     .table-card {

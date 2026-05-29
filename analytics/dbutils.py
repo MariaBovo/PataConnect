@@ -3,27 +3,66 @@ import pandas as pd
 from system.condb import *
 
 def extract_animal_data(conn: sqlite3.Connection) -> pd.DataFrame:
-    """Extracts base animal profiles, current occupancy, and shelter days."""
+    """Extracts base animal profiles from the current pets/service_records schema."""
     query = """
+        WITH total_pets AS (
+            SELECT COUNT(*) AS total_count
+            FROM pets
+        ),
+        last_arrivals AS (
+            SELECT
+                pet_id,
+                MAX(arrival_date) AS last_arrival_date
+            FROM service_records
+            WHERE pet_id IS NOT NULL
+            GROUP BY pet_id
+        )
         SELECT 
-            animal_id, 
-            age_category, 
-            health_on_arrival, 
-            days_in_shelter, 
-            current_block_occupancy_rate 
-        FROM active_animals
+            pets.id AS animal_id,
+            CASE
+                WHEN pets.birth_date IS NULL THEN 'adult'
+                WHEN julianday('now') - julianday(pets.birth_date) < 365 THEN 'puppy'
+                WHEN julianday('now') - julianday(pets.birth_date) > 2920 THEN 'senior'
+                ELSE 'adult'
+            END AS age_category,
+            CASE
+                WHEN pets.euthanasia = 1 THEN 'poor'
+                ELSE 'fair'
+            END AS health_on_arrival,
+            CAST(
+                MAX(
+                    0,
+                    julianday('now') - julianday(
+                        COALESCE(last_arrivals.last_arrival_date, DATE(pets.created_at), DATE('now'))
+                    )
+                ) AS INTEGER
+            ) AS days_in_shelter,
+            MIN(1.0, total_pets.total_count / 500.0) AS current_block_occupancy_rate
+        FROM pets
+        CROSS JOIN total_pets
+        LEFT JOIN last_arrivals ON last_arrivals.pet_id = pets.id
     """
     return pd.read_sql_query(query, conn)
 
 def extract_exposure_data(conn: sqlite3.Connection) -> pd.DataFrame:
-    """Extracts handler interaction and kennel proximity vectors."""
+    """Builds exposure proxy features from the current service_records schema."""
     query = """
         SELECT 
-            animal_id, 
-            exposed_to_sick_handler, 
-            proximity_to_confirmed_case 
-        FROM daily_exposure_logs
-        WHERE log_date = DATE('now', '-1 day')
+            pets.id AS animal_id,
+            CASE
+                WHEN EXISTS (
+                    SELECT 1
+                    FROM service_records
+                    WHERE service_records.pet_id = pets.id
+                      AND LOWER(COALESCE(service_records.procedures, '')) LIKE '%isolamento%'
+                ) THEN 1
+                ELSE 0
+            END AS exposed_to_sick_handler,
+            CASE
+                WHEN pets.euthanasia = 1 THEN 1
+                ELSE 0
+            END AS proximity_to_confirmed_case
+        FROM pets
     """
     return pd.read_sql_query(query, conn)
 

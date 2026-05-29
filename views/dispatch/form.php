@@ -1,6 +1,105 @@
 <?php
 require_once __DIR__ . '/../../system/auth.php';
-pata_require_login();
+$page = pata_page_start();
+
+$form_values = [
+    'requester_name' => '',
+    'requester_phone' => '',
+    'incident_address' => '',
+    'incident_neighborhood' => '',
+    'incident_landmark' => '',
+    'incident_description' => '',
+    'reported_species' => '',
+    'reported_gender' => '',
+    'reported_size' => '',
+    'reported_color' => '',
+];
+
+if ($page['method'] === 'POST') {
+    foreach ($form_values as $field => $default) {
+        $form_values[$field] = trim((string) ($_POST[$field] ?? $default));
+    }
+}
+
+function save_service_record(array $form_values): ?int
+{
+    $current_user = pata_current_user();
+    $record_number = 'SR-' . date('Ymd-His');
+    $query = '
+        INSERT INTO "service_records" (
+            "record_number",
+            "request_date",
+            "request_time",
+            "requester_name",
+            "requester_phone",
+            "incident_address",
+            "incident_neighborhood",
+            "incident_landmark",
+            "incident_description",
+            "received_by_user_id",
+            "reported_species",
+            "reported_gender",
+            "reported_size",
+            "reported_color"
+        ) VALUES (
+            :record_number,
+            CURRENT_DATE,
+            CURRENT_TIME,
+            :requester_name,
+            :requester_phone,
+            :incident_address,
+            :incident_neighborhood,
+            :incident_landmark,
+            :incident_description,
+            :received_by_user_id,
+            :reported_species,
+            :reported_gender,
+            :reported_size,
+            :reported_color
+        )
+    ';
+    $statement = pata_db()->prepare($query);
+    $statement->execute([
+        'record_number' => $record_number,
+        'requester_name' => $form_values['requester_name'],
+        'requester_phone' => $form_values['requester_phone'],
+        'incident_address' => $form_values['incident_address'],
+        'incident_neighborhood' => $form_values['incident_neighborhood'] !== '' ? $form_values['incident_neighborhood'] : null,
+        'incident_landmark' => $form_values['incident_landmark'] !== '' ? $form_values['incident_landmark'] : null,
+        'incident_description' => $form_values['incident_description'],
+        'received_by_user_id' => $current_user['id'] > 0 ? $current_user['id'] : null,
+        'reported_species' => $form_values['reported_species'],
+        'reported_gender' => $form_values['reported_gender'] !== '' ? $form_values['reported_gender'] : null,
+        'reported_size' => $form_values['reported_size'] !== '' ? $form_values['reported_size'] : null,
+        'reported_color' => $form_values['reported_color'] !== '' ? $form_values['reported_color'] : null,
+    ]);
+
+    $last_id = pata_db()->lastInsertId();
+
+    return $last_id !== false && $last_id !== '' ? (int) $last_id : null;
+}
+
+if ($page['error'] === null && $page['notice'] === null && $page['method'] === 'POST' && $page['action'] === 'create_service_record') {
+    $required_fields = ['requester_name', 'requester_phone', 'incident_address', 'incident_description', 'reported_species'];
+
+    foreach ($required_fields as $field) {
+        if ($form_values[$field] === '') {
+            $page['error'] = 'Preencha todos os campos obrigatorios da ficha de atendimento.';
+            break;
+        }
+    }
+
+    if ($page['error'] === null) {
+        try {
+            $saved_id = save_service_record($form_values);
+            $page['notice'] = $saved_id !== null
+                ? "Ficha de atendimento #{$saved_id} salva em service_records."
+                : 'Ficha de atendimento salva em service_records.';
+        } catch (Throwable $error) {
+            $page['notice'] = 'Ficha hidratada nesta pagina. O banco ainda nao gravou o registro.';
+        }
+    }
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -13,80 +112,89 @@ require_once('../components/head.php');
     <div class="registration-wrapper">
         <div class="form-card">
             <div class="header-actions">
-                <a href="/dispatch"><button class="btn-action btn-secondary">Voltar</button></a>
+                <a href="/dispatch" class="btn-action btn-secondary">Voltar</a>
             </div>
             <div class="form-header">
-                <h2>Cadastro de Novo Resgate</h2>
-                <p>Registre os dados do chamador e informações do incidente para o despacho da equipe de resgate.</p>
+                <h2>Ficha de Atendimento ao Municipe</h2>
+                <p>Registre a solicitacao, o local da ocorrencia e os dados informados do animal.</p>
             </div>
-            <form action="#" method="POST">
+            <form action="<?php echo pata_form_action(); ?>" method="POST">
+                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(pata_csrf_token()); ?>">
+                <input type="hidden" name="action" value="create_service_record">
                 
-                <h3 class="form-section-title">Informações do Chamador</h3>
+                <h3 class="form-section-title">Dados da Solicitação</h3>
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="caller_name">Nome Completo</label>
-                        <input type="text" id="caller_name" name="caller_name" class="form-control" placeholder="ex.: Maria Santos" required>
+                        <label for="requester_name">Nome do Solicitante</label>
+                        <input type="text" id="requester_name" name="requester_name" class="form-control" placeholder="ex.: Maria Santos" value="<?php echo htmlspecialchars($form_values['requester_name']); ?>" required>
                     </div>
                     <div class="form-group">
-                        <label for="caller_phone">Telefone</label>
-                        <input type="tel" id="caller_phone" name="caller_phone" class="form-control" placeholder="(00) 00000-0000" required>
+                        <label for="requester_phone">Telefone</label>
+                        <input type="tel" id="requester_phone" name="requester_phone" class="form-control" placeholder="(00) 00000-0000" value="<?php echo htmlspecialchars($form_values['requester_phone']); ?>" required>
                     </div>
                 </div>
 
+                <h3 class="form-section-title">Local do Incidente</h3>
                 <div class="form-group" style="margin-bottom: 1.25rem;">
-                    <label for="incident_location">Local do Incidente / Endereço</label>
-                    <input type="text" id="incident_location" name="incident_location" class="form-control" placeholder="Nome da rua, número, bairro e pontos de referência" required>
+                    <label for="incident_address">Endereco</label>
+                    <input type="text" id="incident_address" name="incident_address" class="form-control" placeholder="Nome da rua, numero e complemento" value="<?php echo htmlspecialchars($form_values['incident_address']); ?>" required>
                 </div>
-
-                <h3 class="form-section-title">Detalhes do Incidente</h3>
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="call_reason">Motivo da Chamada</label>
-                        <select id="call_reason" name="call_reason" class="form-control" required>
-                            <option value="" disabled selected>Selecione o motivo…</option>
-                            <option value="stray">Animal de Rua (Agressivo)</option>
-                            <option value="injured">Resgate de Animal Ferido/Doente</option>
-                            <option value="abuse">Denúncia de Maus‑tratos/Negligência</option>
-                            <option value="surrender">Entrega de Proprietário</option>
-                            <option value="other">Outra Consulta</option>
+                        <label for="incident_neighborhood">Bairro</label>
+                        <input type="text" id="incident_neighborhood" name="incident_neighborhood" class="form-control" placeholder="ex.: Centro" value="<?php echo htmlspecialchars($form_values['incident_neighborhood']); ?>">
+                    </div>
+                    <div class="form-group">
+                        <label for="incident_landmark">Ponto de Referencia</label>
+                        <input type="text" id="incident_landmark" name="incident_landmark" class="form-control" placeholder="ex.: Proximo a escola" value="<?php echo htmlspecialchars($form_values['incident_landmark']); ?>">
+                    </div>
+                </div>
+
+                <h3 class="form-section-title">Animal Informado</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="reported_species">Especie</label>
+                        <select id="reported_species" name="reported_species" class="form-control" required>
+                            <option value="" disabled <?php echo $form_values['reported_species'] === '' ? 'selected' : ''; ?>>Selecione a especie</option>
+                            <option value="Canino" <?php echo $form_values['reported_species'] === 'Canino' ? 'selected' : ''; ?>>Canino</option>
+                            <option value="Felino" <?php echo $form_values['reported_species'] === 'Felino' ? 'selected' : ''; ?>>Felino</option>
+                            <option value="Equino" <?php echo $form_values['reported_species'] === 'Equino' ? 'selected' : ''; ?>>Equino</option>
+                            <option value="Bovino" <?php echo $form_values['reported_species'] === 'Bovino' ? 'selected' : ''; ?>>Bovino</option>
+                            <option value="Outro" <?php echo $form_values['reported_species'] === 'Outro' ? 'selected' : ''; ?>>Outro</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="animal_type">Tipo de Animal</label>
-                        <select id="animal_type" name="animal_type" class="form-control" required>
-                            <option value="" disabled selected>Selecione a espécie…</option>
-                            <option value="dog">Canino</option>
-                            <option value="cat">Felino</option>
-                            <option value="equine">Equino</option>
-                            <option value="wildlife">Selvagem</option>
-                            <option value="multiple">Múltiplos Animais</option>
-                            <option value="uni">Universitário</option>
-                            <option value="unknown">Desconhecido</option>
+                        <label for="reported_gender">Sexo</label>
+                        <select id="reported_gender" name="reported_gender" class="form-control">
+                            <option value="" <?php echo $form_values['reported_gender'] === '' ? 'selected' : ''; ?>>Nao informado</option>
+                            <option value="Macho" <?php echo $form_values['reported_gender'] === 'Macho' ? 'selected' : ''; ?>>Macho</option>
+                            <option value="Fêmea" <?php echo $form_values['reported_gender'] === 'Fêmea' ? 'selected' : ''; ?>>Fêmea</option>
                         </select>
                     </div>
                 </div>
 
-                <div class="form-group" style="margin-bottom: 1.25rem;">
-                    <label>Nível de Prioridade</label>
-                    <div class="urgency-group">
-                        <label class="urgency-label">
-                            <input type="radio" name="priority" value="low" checked> Baixa
-                        </label>
-                        <label class="urgency-label">
-                            <input type="radio" name="priority" value="medium"> Média
-                        </label>
-                        <label class="urgency-label" style="color: #fa5252; font-weight: bold;">
-                            <input type="radio" name="priority" value="high"> Alta (Emergência/Fudeu)
-                        </label>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="reported_size">Porte</label>
+                        <select id="reported_size" name="reported_size" class="form-control">
+                            <option value="" <?php echo $form_values['reported_size'] === '' ? 'selected' : ''; ?>>Nao informado</option>
+                            <option value="Pequeno" <?php echo $form_values['reported_size'] === 'Pequeno' ? 'selected' : ''; ?>>Pequeno</option>
+                            <option value="Médio" <?php echo $form_values['reported_size'] === 'Médio' ? 'selected' : ''; ?>>Médio</option>
+                            <option value="Grande" <?php echo $form_values['reported_size'] === 'Grande' ? 'selected' : ''; ?>>Grande</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="reported_color">Cor</label>
+                        <input type="text" id="reported_color" name="reported_color" class="form-control" placeholder="ex.: Caramelo" value="<?php echo htmlspecialchars($form_values['reported_color']); ?>">
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label for="notes">Descrição & Observações Adicionais</label>
-                    <textarea id="notes" name="notes" class="form-control" placeholder="Descreva a cor, tamanho, condição do animal e quaisquer instruções específicas para a equipe de resgate…"></textarea>
+                    <label for="incident_description">Descricao da Ocorrencia</label>
+                    <textarea id="incident_description" name="incident_description" class="form-control" placeholder="Descreva a situacao, condicao do animal e instrucoes para a equipe." required><?php echo htmlspecialchars($form_values['incident_description']); ?></textarea>
                 </div>
 
-                <button type="submit" class="btn-submit">Registrar Chamada de Despacho</button>
+                <button type="submit" class="btn-submit">Registrar Ficha de Atendimento</button>
             </form>
         </div>
     </div>
