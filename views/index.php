@@ -1,3 +1,7 @@
+<?php
+require_once __DIR__ . '/../system/auth.php';
+pata_require_login();
+?>
 <!DOCTYPE html>
 <html>
 <?php

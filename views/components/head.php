@@ -1,5 +1,6 @@
 <?php
 $PROD = TRUE;
+require_once __DIR__ . '/../../system/auth.php';
 require_once("./../utils/ipc.php")
 ?>
 <head>
