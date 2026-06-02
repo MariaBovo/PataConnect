@@ -8,9 +8,9 @@ if ($page['error'] === null && $page['notice'] === null && $page['method'] === '
 ?>
 <!DOCTYPE html>
 <html>
-<?php require_once('../components/head.php'); ?>
+<?php require_once(__DIR__ . '/../components/head.php'); ?>
 <body>
-    <?php require('../components/headnav.php'); ?>
+    <?php require(__DIR__ . '/../components/headnav.php'); ?>
 
     <main class="report-wrapper">
         <div class="report-header">

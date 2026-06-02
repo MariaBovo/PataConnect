@@ -9,8 +9,8 @@ if ($page['error'] === null && $page['notice'] === null && $page['method'] === '
 <!DOCTYPE html>
 <html>
 <?php
-require_once('../components/card.php');
-require_once('../components/head.php');
+require_once(__DIR__ . '/../components/card.php');
+require_once(__DIR__ . '/../components/head.php');
 
 $forecast_path = __DIR__ . '/../../analytics/artifacts/stock_forecast.json';
 $forecast = null;
@@ -30,7 +30,7 @@ $warning_items = $summary['warning_items'] ?? '-';
 $next_priority = $summary['next_purchase_priority'] ?? '-';
 ?>
 <body>
-    <?php require('../components/headnav.php');?>
+    <?php require(__DIR__ . '/../components/headnav.php');?>
     <hr style="border-color: #333; margin-bottom: 2rem;">
 
     <div class="dashboard-grid">

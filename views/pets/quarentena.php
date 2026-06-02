@@ -21,11 +21,11 @@ if (isset($_GET['from'])) {
     $return_to = htmlspecialchars($_GET['from']) == "dispatch" ? "/dispatch" : "/pets";
 };
 
-require_once('../components/card.php');
-require_once('../components/head.php');
+require_once(__DIR__ . '/../components/card.php');
+require_once(__DIR__ . '/../components/head.php');
 ?>
 <body>
-    <?php require('../components/headnav.php');?>
+    <?php require(__DIR__ . '/../components/headnav.php');?>
     <hr style="border-color: #333; margin-bottom: 2rem;">
     <div class="dashboard-grid">
         <?php

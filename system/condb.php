@@ -58,10 +58,12 @@ function pata_db(): PDO
     $password = pata_env('PATA_DB_PASSWORD', '');
 
     if ($dsn === null) {
-        $dsn = 'pgsql:host=localhost;port=5432;dbname=pataconnect';
+        $dsn = 'sqlite:' . dirname(__DIR__) . '/storage/database.sqlite';
+        $user = null;
+        $password = null;
     }
 
-    if (strpos($dsn, 'postgres://') === 0 || strpos($dsn, 'postgresql://') === 0 || strpos($dsn, 'pgsql://') === 0) {
+    if (is_string($dsn) && (strpos($dsn, 'postgres://') === 0 || strpos($dsn, 'postgresql://') === 0 || strpos($dsn, 'pgsql://') === 0)) {
         [$dsn, $user, $password] = pata_database_url_to_pdo($dsn, $user, $password);
     }
 
@@ -70,6 +72,10 @@ function pata_db(): PDO
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
         PDO::ATTR_EMULATE_PREPARES => false,
     ]);
+
+    if ($pdo->getAttribute(PDO::ATTR_DRIVER_NAME) === 'sqlite') {
+        $pdo->exec('PRAGMA foreign_keys = ON;');
+    }
 
     return $pdo;
 }

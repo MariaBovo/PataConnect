@@ -7,11 +7,11 @@
     "php": ">=8.2",
     "ext-json": "*",
     "ext-pdo": "*",
+    "ext-pdo_sqlite": "*",
     "ext-session": "*"
   },
   "suggest": {
-    "ext-pdo_pgsql": "Recomendado para usar o banco PostgreSQL padrao do projeto.",
-    "ext-pdo_sqlite": "Util para ambientes locais temporarios com SQLite.",
+    "ext-pdo_pgsql": "Recomendado caso deseje usar o banco PostgreSQL como alternativa.",
     "ext-pdo_mysql": "Util caso o DSN PATA_DB_DSN seja configurado para MySQL."
   },
   "scripts": {

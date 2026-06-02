@@ -1,7 +1,7 @@
 -- 1. SYSTEM USERS (Employees/Staff)
 -- Keeps your original structure for system access.
 CREATE TABLE "users" (
-    "id" SERIAL PRIMARY KEY,
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
     "full_name" VARCHAR(255) NOT NULL,
     "username" VARCHAR(100) UNIQUE NOT NULL,
     "pass_hash" TEXT NOT NULL,
@@ -12,7 +12,7 @@ CREATE TABLE "users" (
 -- 2. TUTORS (Citizens / Munícipes / Adopters)
 -- Captures "DADOS DO TUTOR RESPONSÁVEL" from the Ficha de Controle.
 CREATE TABLE "tutors" (
-    "id" SERIAL PRIMARY KEY,
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
     "cpf" VARCHAR(14) UNIQUE,
     "full_name" VARCHAR(255) NOT NULL,
     "phone_1" VARCHAR(20),
@@ -31,7 +31,7 @@ CREATE TABLE "tutors" (
 -- 3. PETS (Animal Master Data)
 -- Expanded to include all "DADOS DO ANIMAL" from both forms.
 CREATE TABLE "pets" (
-    "id" SERIAL PRIMARY KEY,
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
     "name" VARCHAR(255),
     "microchip" VARCHAR(100) UNIQUE,
     "species" VARCHAR(50) NOT NULL, -- e.g., Canino, Felino, Equino, Bovino, Outro
@@ -48,7 +48,7 @@ CREATE TABLE "pets" (
 -- 4. VACCINES 
 -- Captures the "Vacina Polivalente" and "Vacina Antirrábica" checkboxes and dates.
 CREATE TABLE "pet_vaccines" (
-    "id" SERIAL PRIMARY KEY,
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
     "pet_id" INTEGER REFERENCES "pets"("id") ON DELETE CASCADE,
     "vaccine_type" VARCHAR(50) NOT NULL, -- Polivalente, Antirrábica
     "is_administered" BOOLEAN DEFAULT FALSE,
@@ -59,7 +59,7 @@ CREATE TABLE "pet_vaccines" (
 -- 5. SERVICE & RESCUE RECORDS (Ficha de Atendimento ao Munícipe)
 -- Captures the entire workflow of the first document (incident report + on-site investigation).
 CREATE TABLE "service_records" (
-    "id" SERIAL PRIMARY KEY,
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
     "record_number" VARCHAR(50),
     
     -- Request Data
@@ -95,7 +95,7 @@ CREATE TABLE "service_records" (
 -- 6. CONTROL RECORDS (Ficha de Controle)
 -- Replaces "adoption" to handle Adoção, Castração, Transferência, or Cadastramento.
 CREATE TABLE "control_records" (
-    "id" SERIAL PRIMARY KEY,
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
     "record_type" VARCHAR(50) NOT NULL, -- Adoção, Castração, Transferência, Cadastramento
     "tutor_id" INTEGER REFERENCES "tutors"("id") ON DELETE RESTRICT,
     "pet_id" INTEGER REFERENCES "pets"("id") ON DELETE RESTRICT,
@@ -105,7 +105,7 @@ CREATE TABLE "control_records" (
 -- 7. RESPONSIBILITY TERMS (Termo de Responsabilidade de Tutela)
 -- Captures the legal signatures and witnesses from the final page.
 CREATE TABLE "responsibility_terms" (
-    "id" SERIAL PRIMARY KEY,
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
     "control_record_id" INTEGER REFERENCES "control_records"("id") ON DELETE CASCADE,
     "city" VARCHAR(100) DEFAULT 'Rio Claro',
     "signed_date" DATE,

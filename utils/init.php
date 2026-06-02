@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-require_once __DIR__ . '/../../system/auth.php';
+require_once __DIR__ . '/../system/auth.php';
 
 function pata_init_project_root(): string
 {
-    return dirname(__DIR__, 2);
+    return dirname(__DIR__);
 }
 
 function pata_init_escape(?string $value): string
@@ -232,8 +232,8 @@ function pata_init_seed_admin(PDO $pdo): array
         return ['status' => 'skipped', 'message' => 'Tabela users ainda nao existe.'];
     }
 
-    $username = pata_env('PATA_DEFAULT_ADMIN_USER', 'admin');
-    $password = pata_env('PATA_DEFAULT_ADMIN_PASSWORD', 'pata123');
+    $username = pata_env('PATA_DEFAULT_ADMIN_USER', 'pata');
+    $password = pata_env('PATA_DEFAULT_ADMIN_PASSWORD', 'admin');
     $full_name = pata_env('PATA_DEFAULT_ADMIN_NAME', 'Administrador Pata');
 
     $statement = $pdo->prepare('SELECT "id" FROM "users" WHERE "username" = :username LIMIT 1');
@@ -521,5 +521,27 @@ function pata_init_render_page(array $state): void
 }
 
 if (pata_init_direct_request()) {
-    pata_init_render_page(pata_init_page_state());
+    if (pata_init_is_cli()) {
+        echo "Iniciando inicializacao do Pata via CLI...\n";
+        $result = pata_init_run();
+        if ($result['error'] !== null) {
+            echo "Erro: " . $result['error'] . "\n";
+            exit(1);
+        }
+        echo "Storage:\n";
+        foreach ($result['storage'] as $dir) {
+            echo "  [" . ($dir['exists'] && $dir['writable'] ? "OK" : "ERRO") . "] " . $dir['path'] . "\n";
+        }
+        echo "Banco de dados: [" . ($result['database']['ok'] ? "OK" : "ERRO") . "] via " . $result['database']['driver'] . "\n";
+        echo "Schema:\n";
+        foreach ($result['schema'] as $item) {
+            echo "  [" . $item['status'] . "] " . $item['type'] . " " . $item['name'] . "\n";
+        }
+        if ($result['admin'] !== null) {
+            echo "Administrador: [" . $result['admin']['status'] . "] " . $result['admin']['message'] . "\n";
+        }
+        echo "Inicializacao concluida com sucesso!\n";
+    } else {
+        pata_init_render_page(pata_init_page_state());
+    }
 }

@@ -22,11 +22,11 @@ if ($page['error'] === null && $page['notice'] === null) {
 <!DOCTYPE html>
 <html>
 <?php
-require_once('../components/card.php');
-require_once('../components/head.php');
+require_once(__DIR__ . '/../components/card.php');
+require_once(__DIR__ . '/../components/head.php');
 ?>
 <body>
-    <?php require('../components/headnav.php');?>
+    <?php require(__DIR__ . '/../components/headnav.php');?>
     <hr style="border-color: #333; margin-bottom: 2rem;">
     <div class="dashboard-grid">
         <?php
