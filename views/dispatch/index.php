@@ -4,18 +4,34 @@ $page = pata_page_start();
 
 if ($page['error'] === null && $page['notice'] === null) {
     if ($page['method'] === 'POST' && $page['action'] === 'refresh_service_records') {
-        $page['notice'] = 'Fichas de atendimento reidratadas nesta pagina.';
-    }
-
-    if ($page['method'] === 'POST' && $page['action'] === 'service_record_details') {
-        $service_record_id = (string) ($_POST['service_record_id'] ?? '');
-        $page['notice'] = "Ficha de atendimento {$service_record_id} carregada nesta pagina.";
+        $page['notice'] = 'Listagem de fichas de atendimento atualizada.';
     }
 
     if ($page['method'] === 'PATCH' && $page['action'] === 'close_service_record') {
-        $service_record_id = (string) ($_POST['service_record_id'] ?? '');
-        $page['notice'] = "Ficha de atendimento {$service_record_id} marcada para encerramento nesta pagina.";
+        $service_record_id = (int) ($_POST['service_record_id'] ?? 0);
+        if ($service_record_id > 0) {
+            try {
+                $statement = pata_db()->prepare('
+                    UPDATE "service_records"
+                    SET "animal_found" = FALSE, "animal_collected" = FALSE, "investigation_date" = CURRENT_DATE
+                    WHERE "id" = :id
+                ');
+                $statement->execute(['id' => $service_record_id]);
+                $page['notice'] = "Ficha de atendimento #{$service_record_id} marcada como Não Encontrado / Ignorado.";
+            } catch (Throwable $e) {
+                $page['error'] = "Erro ao atualizar banco de dados: " . $e->getMessage();
+            }
+        }
     }
+}
+
+// Fetch pending records from the database (where animal_found is null)
+$service_records = [];
+try {
+    $statement = pata_db()->query('SELECT * FROM "service_records" WHERE "animal_found" IS NULL ORDER BY "id" DESC');
+    $service_records = $statement->fetchAll();
+} catch (Throwable $e) {
+    $page['error'] = "Erro ao buscar fichas: " . $e->getMessage();
 }
 ?>
 <!DOCTYPE html>
@@ -97,107 +113,49 @@ require_once(__DIR__ . '/../components/head.php');
                     </tr>
                 </thead>
                 <tbody>
+                <?php if (empty($service_records)): ?>
                     <tr>
-                        <td>
-                            <strong>#SR-1042</strong>
-                            <span class="text-muted">15 min atrás</span>
-                        </td>
-                        <td>
-                            <strong>Maria Santos</strong>
-                            <span class="text-muted">(19) 99999-0000</span>
-                        </td>
-                        <td>
-                            Av. Brasil, 1500
-                            <span class="text-muted">Centro</span>
-                        </td>
-                        <td>
-                            <strong>Canino</strong>
-                            <span class="text-muted">Macho, grande, caramelo</span>
-                        </td>
-                        <td>
-                            <div class="actions-cell">
-                                <form method="POST" action="<?php echo pata_form_action(); ?>">
-                                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(pata_csrf_token()); ?>">
-                                    <input type="hidden" name="service_record_id" value="#SR-1042">
-                                    <button type="submit" name="action" value="service_record_details" class="btn-action btn-secondary" title="Mais detalhes">Mais detalhes</button>
-                                </form>
-                                <form method="POST" action="<?php echo pata_form_action(); ?>">
-                                    <input type="hidden" name="_method" value="PATCH">
-                                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(pata_csrf_token()); ?>">
-                                    <input type="hidden" name="service_record_id" value="#SR-1042">
-                                    <button type="submit" name="action" value="close_service_record" class="btn-action btn-primary" title="Encerrar">Encerrar</button>
-                                </form>
-                            </div>
+                        <td colspan="5" style="text-align: center; color: #adb5bd; padding: 2rem;">
+                            Nenhuma ficha de atendimento pendente.
                         </td>
                     </tr>
-
-                    <tr>
-                        <td>
-                            <strong>#SR-1041</strong>
-                            <span class="text-muted">45 min atrás</span>
-                        </td>
-                        <td>
-                            <strong>Joao Pereira</strong>
-                            <span class="text-muted">(19) 98888-1111</span>
-                        </td>
-                        <td>
-                            Rua M 4, 850
-                            <span class="text-muted">Jardim Floridiana</span>
-                        </td>
-                        <td>
-                            <strong>Felino</strong>
-                            <span class="text-muted">Fêmea, pequeno, preto</span>
-                        </td>
-                        <td>
-                            <div class="actions-cell">
-                                <form method="POST" action="<?php echo pata_form_action(); ?>">
-                                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(pata_csrf_token()); ?>">
-                                    <input type="hidden" name="service_record_id" value="#SR-1041">
-                                    <button type="submit" name="action" value="service_record_details" class="btn-action btn-secondary" title="Mais detalhes">Mais detalhes</button>
-                                </form>
-                                <form method="POST" action="<?php echo pata_form_action(); ?>">
-                                    <input type="hidden" name="_method" value="PATCH">
-                                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(pata_csrf_token()); ?>">
-                                    <input type="hidden" name="service_record_id" value="#SR-1041">
-                                    <button type="submit" name="action" value="close_service_record" class="btn-action btn-primary" title="Encerrar">Encerrar</button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>
-                            <strong>#SR-1039</strong>
-                            <span class="text-muted">2 horas atrás</span>
-                        </td>
-                        <td>
-                            <strong>Lucia Almeida</strong>
-                            <span class="text-muted">(19) 97777-2222</span>
-                        </td>
-                        <td>
-                            Rua 14, 220
-                            <span class="text-muted">Consolação</span>
-                        </td>
-                        <td>
-                            <strong>Canino</strong>
-                            <span class="text-muted">Nao informado</span>
-                        </td>
-                        <td>
-                            <div class="actions-cell">
-                                <form method="POST" action="<?php echo pata_form_action(); ?>">
-                                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(pata_csrf_token()); ?>">
-                                    <input type="hidden" name="service_record_id" value="#SR-1039">
-                                    <button type="submit" name="action" value="service_record_details" class="btn-action btn-secondary" title="Mais detalhes">Mais detalhes</button>
-                                </form>
-                                <form method="POST" action="<?php echo pata_form_action(); ?>">
-                                    <input type="hidden" name="_method" value="PATCH">
-                                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(pata_csrf_token()); ?>">
-                                    <input type="hidden" name="service_record_id" value="#SR-1039">
-                                    <button type="submit" name="action" value="close_service_record" class="btn-action btn-primary" title="Encerrar">Encerrar</button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
+                <?php else: ?>
+                    <?php foreach ($service_records as $record): ?>
+                        <tr>
+                            <td>
+                                <strong>#<?php echo htmlspecialchars($record['record_number'] ?? 'SR-'.$record['id']); ?></strong>
+                                <span class="text-muted"><?php echo htmlspecialchars($record['request_date']); ?></span>
+                            </td>
+                            <td>
+                                <strong><?php echo htmlspecialchars($record['requester_name']); ?></strong>
+                                <span class="text-muted"><?php echo htmlspecialchars($record['requester_phone']); ?></span>
+                            </td>
+                            <td>
+                                <?php echo htmlspecialchars($record['incident_address']); ?>
+                                <span class="text-muted"><?php echo htmlspecialchars($record['incident_neighborhood'] ?? ''); ?></span>
+                            </td>
+                            <td>
+                                <strong><?php echo htmlspecialchars($record['reported_species']); ?></strong>
+                                <span class="text-muted"><?php echo htmlspecialchars(implode(', ', array_filter([
+                                    $record['reported_gender'],
+                                    $record['reported_size'],
+                                    $record['reported_color']
+                                ]))); ?></span>
+                            </td>
+                            <td>
+                                <div class="actions-cell">
+                                    <a href="/dispatch/rescue?id=<?php echo $record['id']; ?>" class="btn-action btn-primary" title="Resgatar">Resgatar</a>
+                                    <form method="POST" action="<?php echo pata_form_action(); ?>">
+                                        <input type="hidden" name="_method" value="PATCH">
+                                        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(pata_csrf_token()); ?>">
+                                        <input type="hidden" name="service_record_id" value="<?php echo $record['id']; ?>">
+                                        <button type="submit" name="action" value="close_service_record" class="btn-action btn-secondary" style="border-color: #fa5252; color: #fa5252;" title="Ignorar / Não Encontrado">Ignorar</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
                 </tbody>
             </table>
         </div>

@@ -42,6 +42,11 @@ CREATE TABLE "pets" (
     "birth_date" DATE,
     "is_castrated" BOOLEAN DEFAULT FALSE,
     "euthanasia" BOOLEAN DEFAULT FALSE,
+    "quarantine_start" DATE,
+    "quarantine_days" INTEGER DEFAULT 7,
+    "block" VARCHAR(50),
+    "cage" VARCHAR(50),
+    "status" VARCHAR(50) DEFAULT 'Quarentena',
     "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

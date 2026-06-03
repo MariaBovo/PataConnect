@@ -4,12 +4,47 @@ $page = pata_page_start();
 
 if ($page['error'] === null && $page['notice'] === null) {
     if ($page['method'] === 'POST' && $page['action'] === 'refresh_adopted') {
-        $page['notice'] = 'Listagem de adotados reidratada nesta pagina.';
+        $page['notice'] = 'Listagem de adotados atualizada.';
     }
+}
 
-    if ($page['method'] === 'POST' && $page['action'] === 'open_pet_record') {
-        $pet_id = (string) ($_POST['pet_id'] ?? '');
-        $page['notice'] = "Ficha do animal {$pet_id} carregada nesta pagina.";
+// Fetch adopted pets from database
+$adoptions = [];
+try {
+    $query = '
+        SELECT 
+            p.id AS pet_id,
+            p.name AS pet_name,
+            p.species AS pet_species,
+            p.breed AS pet_breed,
+            p.color AS pet_color,
+            p.size AS pet_size,
+            t.full_name AS tutor_name,
+            t.phone_1 AS tutor_phone,
+            cr.created_at AS adoption_date
+        FROM "pets" p
+        JOIN "control_records" cr ON cr.pet_id = p.id
+        JOIN "tutors" t ON cr.tutor_id = t.id
+        WHERE cr.record_type = \'Adoção\' AND p.status = \'Adotado\'
+        ORDER BY cr.id DESC
+    ';
+    $statement = pata_db()->query($query);
+    $adoptions = $statement->fetchAll();
+} catch (Throwable $e) {
+    $page['error'] = "Erro ao buscar adotações: " . $e->getMessage();
+}
+
+$selected_pet = null;
+if ($page['method'] === 'POST' && $page['action'] === 'open_pet_record') {
+    $pet_id = (int) ($_POST['pet_id'] ?? 0);
+    if ($pet_id > 0) {
+        try {
+            $stmt = pata_db()->prepare('SELECT * FROM "pets" WHERE "id" = :id LIMIT 1');
+            $stmt->execute(['id' => $pet_id]);
+            $selected_pet = $stmt->fetch();
+        } catch (Throwable $e) {
+            $page['error'] = "Erro ao buscar ficha do animal: " . $e->getMessage();
+        }
     }
 }
 ?>
@@ -18,6 +53,7 @@ if ($page['error'] === null && $page['notice'] === null) {
 <?php
 require_once(__DIR__ . '/../components/card.php');
 require_once(__DIR__ . '/../components/head.php');
+require_once(__DIR__ . '/../components/animal_sheet.php');
 ?>
 <body>
     <?php require(__DIR__ . '/../components/headnav.php');?>
@@ -56,73 +92,62 @@ require_once(__DIR__ . '/../components/head.php');
                         <th>Nome</th>
                         <th>Espécie</th>
                         <th>Raça</th>
-                        <th>Tipo / Data do registro</th>
+                        <th>Tutor / Responsável</th>
+                        <th>Data da Adoção</th>
                         <th style="text-align: right;">Ações</th>
                     </tr>
                 </thead>
                 <tbody>
+                <?php if (empty($adoptions)): ?>
                     <tr>
-                        <td>
-                            <strong>#PET-1042</strong>
-                            <span class="text-muted">15 min atrás</span>
-                        </td>
-                        <td>
-                            <strong>Armando</strong>
-                            <span class="text-muted badge-high">Extremamente violento</span>
-                        </td>
-                        <td>
-                            <strong>Canino</strong>
-                        </td>
-                        <td>
-                            <strong>Yorkshire Terrierista</strong>
-                        </td>
-                        <td>
-                            <strong>Adoção</strong>
-                            <span class="text-muted">14/07/2028</span>
-                        </td>
-                        <td>
-                            <div class="actions-cell">
-                                <form method="POST" action="<?php echo pata_form_action(); ?>">
-                                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(pata_csrf_token()); ?>">
-                                    <input type="hidden" name="pet_id" value="#PET-1042">
-                                    <button type="submit" name="action" value="open_pet_record" class="btn-action btn-primary" title="Abrir Ficha">Abrir Ficha</button>
-                                </form>
-                            </div>
+                        <td colspan="7" style="text-align: center; color: #adb5bd; padding: 2rem;">
+                            Nenhum animal adotado registrado no momento.
                         </td>
                     </tr>
-                    <tr>
-                        <td>
-                            <strong>#PET-2080</strong>
-                            <span class="text-muted">15 min atrás</span>
-                        </td>
-                        <td>
-                            <strong>Augusto</strong>
-                            <span class="text-muted badge-low">dibas</span>
-                        </td>
-                        <td>
-                            <strong>Canino</strong>
-                        </td>
-                        <td>
-                            <strong>Vira-lata</strong>
-                        </td>
-                        <td>
-                            <strong>Adoção</strong>
-                            <span class="text-muted">14/07/2028</span>
-                        </td>
-                        <td>
-                            <div class="actions-cell">
-                                <form method="POST" action="<?php echo pata_form_action(); ?>">
-                                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(pata_csrf_token()); ?>">
-                                    <input type="hidden" name="pet_id" value="#PET-2080">
-                                    <button type="submit" name="action" value="open_pet_record" class="btn-action btn-primary" title="Abrir Ficha">Abrir Ficha</button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
+                <?php else: ?>
+                    <?php foreach ($adoptions as $adoption): ?>
+                        <tr>
+                            <td>
+                                <strong>#PET-<?php echo $adoption['pet_id']; ?></strong>
+                            </td>
+                            <td>
+                                <strong><?php echo htmlspecialchars($adoption['pet_name']); ?></strong>
+                            </td>
+                            <td>
+                                <strong><?php echo htmlspecialchars($adoption['pet_species']); ?></strong>
+                            </td>
+                            <td>
+                                <strong><?php echo htmlspecialchars($adoption['pet_breed'] ?? 'SRD'); ?></strong>
+                            </td>
+                            <td>
+                                <strong><?php echo htmlspecialchars($adoption['tutor_name']); ?></strong>
+                                <span class="text-muted" style="font-size: 0.8rem; display:block;"><?php echo htmlspecialchars($adoption['tutor_phone']); ?></span>
+                            </td>
+                            <td>
+                                <strong>Adoção</strong>
+                                <span class="text-muted"><?php echo htmlspecialchars(date('d/m/Y H:i', strtotime($adoption['adoption_date']))); ?></span>
+                            </td>
+                            <td>
+                                <div class="actions-cell">
+                                    <form method="POST" action="<?php echo pata_form_action(); ?>">
+                                        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(pata_csrf_token()); ?>">
+                                        <input type="hidden" name="pet_id" value="<?php echo $adoption['pet_id']; ?>">
+                                        <button type="submit" name="action" value="open_pet_record" class="btn-action btn-secondary" style="padding: 0.35rem 0.7rem; font-size: 0.85rem; border-radius: 4px;" title="Abrir Ficha">Ficha</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
                 </tbody>
             </table>
         </div>
     </div>
+    <?php
+    if ($selected_pet) {
+        echo component_animal_sheet($selected_pet);
+    }
+    ?>
 </body>
 <style>
     .dashboard-grid {
