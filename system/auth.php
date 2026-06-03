@@ -157,7 +157,7 @@ function pata_sanitize_redirect(?string $redirect): string
         return '/';
     }
 
-    if (strpos($redirect, '/login.php') === 0) {
+    if (strpos($redirect, '/login.php') === 0 || strpos($redirect, '/login') === 0) {
         return '/';
     }
 
@@ -171,7 +171,7 @@ function pata_require_login(): void
     }
 
     $redirect = urlencode($_SERVER['REQUEST_URI'] ?? '/');
-    header("Location: /login.php?redirect={$redirect}");
+    header("Location: /login?redirect={$redirect}");
     exit;
 }
 
@@ -256,7 +256,7 @@ function pata_handle_common_page_action(array &$state): void
 
     if ($state['method'] === 'DELETE' && $state['action'] === 'logout') {
         pata_logout();
-        header('Location: /login.php?logged_out=1');
+        header('Location: /login?logged_out=1');
         exit;
     }
 

@@ -12,7 +12,7 @@ if ($method === 'DELETE') {
         $error = 'Sessao expirada. Tente novamente.';
     } else {
         pata_logout();
-        header('Location: /login.php?logged_out=1');
+        header('Location: /login?logged_out=1');
         exit;
     }
 }
@@ -348,7 +348,7 @@ if ($method === 'POST') {
                     <div class="alert alert-success"><?php echo htmlspecialchars($notice); ?></div>
                 <?php endif; ?>
 
-                <form class="auth-form" method="POST" action="/login.php" autocomplete="on">
+                <form class="auth-form" method="POST" action="/login" autocomplete="on">
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(pata_csrf_token()); ?>">
                     <input type="hidden" name="redirect" value="<?php echo htmlspecialchars($redirect); ?>">
 

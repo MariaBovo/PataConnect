@@ -12,6 +12,18 @@ if (php_sapi_name() === 'cli-server') {
 $request_uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $views_dir = __DIR__ . '/views';
 
+// Redirect any request ending in .php to its clean URL counterpart if the file exists
+if (substr($request_uri, -4) === '.php') {
+    $clean_uri = substr($request_uri, 0, -4);
+    $clean_file = $views_dir . $clean_uri . '.php';
+    if (is_file($clean_file)) {
+        $query_string = $_SERVER['QUERY_STRING'] ?? '';
+        $redirect_url = $clean_uri . ($query_string !== '' ? '?' . $query_string : '');
+        header('Location: ' . $redirect_url, true, 301);
+        exit;
+    }
+}
+
 // Base case: root
 if ($request_uri === '/') {
     require $views_dir . '/index.php';

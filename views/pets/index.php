@@ -49,7 +49,7 @@ require_once(__DIR__ . '/../components/head.php');
                 "#212529",
                 "#e8f4f8",
                 "transparent",
-                "/pets/quarentena.php"
+                "/pets/quarentena"
             ));
 
             echo(component_card(
@@ -60,7 +60,7 @@ require_once(__DIR__ . '/../components/head.php');
                 "#212529",
                 "#e8f4f8",
                 "transparent",
-                "/pets/adotados.php"
+                "/pets/adotados"
             ));
         ?>
     </div>
