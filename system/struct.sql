@@ -120,3 +120,26 @@ CREATE TABLE "responsibility_terms" (
     "witness_2_cpf" VARCHAR(14),
     "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- 8. DEPOSIT ITEMS (Consumables Inventory)
+CREATE TABLE "deposit_items" (
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "name" VARCHAR(255) NOT NULL,
+    "category" VARCHAR(100) NOT NULL, -- e.g., Vacina, Ração, Limpeza, Outros
+    "quantity" REAL NOT NULL DEFAULT 0.0,
+    "unit" VARCHAR(50) NOT NULL, -- e.g., Doses, kg, Litros, Unidades
+    "min_quantity" REAL NOT NULL DEFAULT 0.0,
+    "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 9. DEPOSIT MOVEMENTS (Stock Log)
+CREATE TABLE "deposit_movements" (
+    "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "item_id" INTEGER REFERENCES "deposit_items"("id") ON DELETE CASCADE,
+    "movement_type" VARCHAR(10) NOT NULL, -- Entrada, Saída
+    "quantity" REAL NOT NULL,
+    "user_id" INTEGER REFERENCES "users"("id") ON DELETE SET NULL,
+    "description" TEXT,
+    "created_at" TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+

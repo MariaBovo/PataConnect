@@ -256,6 +256,37 @@ function pata_init_seed_admin(PDO $pdo): array
     return ['status' => 'created', 'message' => "Usuario {$username} criado."];
 }
 
+function pata_init_seed_deposit(PDO $pdo): array
+{
+    if (!pata_init_table_exists($pdo, 'deposit_items')) {
+        return ['status' => 'skipped', 'message' => 'Tabela deposit_items ainda nao existe.'];
+    }
+
+    $count = (int) $pdo->query('SELECT COUNT(*) FROM "deposit_items"')->fetchColumn();
+    if ($count > 0) {
+        return ['status' => 'skipped', 'message' => 'Tabela deposit_items ja contem dados.'];
+    }
+
+    $seeds = [
+        ['name' => 'Vacina Polivalente', 'category' => 'Vacina', 'quantity' => 25.0, 'unit' => 'Doses', 'min_quantity' => 10.0],
+        ['name' => 'Vacina Antirrábica', 'category' => 'Vacina', 'quantity' => 15.0, 'unit' => 'Doses', 'min_quantity' => 10.0],
+        ['name' => 'Ração Adulto', 'category' => 'Ração', 'quantity' => 80.0, 'unit' => 'kg', 'min_quantity' => 50.0],
+        ['name' => 'Ração Filhote', 'category' => 'Ração', 'quantity' => 120.0, 'unit' => 'kg', 'min_quantity' => 50.0],
+        ['name' => 'Desinfetante Canil', 'category' => 'Limpeza', 'quantity' => 5.0, 'unit' => 'Litros', 'min_quantity' => 10.0]
+    ];
+
+    $insert = $pdo->prepare('
+        INSERT INTO "deposit_items" ("name", "category", "quantity", "unit", "min_quantity")
+        VALUES (:name, :category, :quantity, :unit, :min_quantity)
+    ');
+
+    foreach ($seeds as $item) {
+        $insert->execute($item);
+    }
+
+    return ['status' => 'created', 'message' => 'Itens iniciais do almoxarifado inseridos.'];
+}
+
 function pata_init_database_status(): array
 {
     try {
@@ -294,6 +325,7 @@ function pata_init_run(): array
         'database' => null,
         'schema' => [],
         'admin' => null,
+        'deposit' => null,
         'error' => null,
     ];
 
@@ -305,6 +337,7 @@ function pata_init_run(): array
         ];
         $result['schema'] = pata_init_apply_schema($pdo);
         $result['admin'] = pata_init_seed_admin($pdo);
+        $result['deposit'] = pata_init_seed_deposit($pdo);
     } catch (Throwable $error) {
         $result['database'] = ['ok' => false, 'driver' => null];
         $result['error'] = $error->getMessage();
@@ -394,6 +427,11 @@ function pata_init_render_result(?array $result): void
     if ($result['admin'] !== null) {
         echo '<h3>Usuario inicial</h3>';
         echo '<p><strong>' . pata_init_escape($result['admin']['status']) . '</strong> ' . pata_init_escape($result['admin']['message']) . '</p>';
+    }
+
+    if ($result['deposit'] !== null) {
+        echo '<h3>Almoxarifado inicial</h3>';
+        echo '<p><strong>' . pata_init_escape($result['deposit']['status']) . '</strong> ' . pata_init_escape($result['deposit']['message']) . '</p>';
     }
 
     echo '</section>';
@@ -539,6 +577,9 @@ if (pata_init_direct_request()) {
         }
         if ($result['admin'] !== null) {
             echo "Administrador: [" . $result['admin']['status'] . "] " . $result['admin']['message'] . "\n";
+        }
+        if ($result['deposit'] !== null) {
+            echo "Almoxarifado: [" . $result['deposit']['status'] . "] " . $result['deposit']['message'] . "\n";
         }
         echo "Inicializacao concluida com sucesso!\n";
     } else {

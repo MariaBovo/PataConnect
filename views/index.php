@@ -1,6 +1,23 @@
 <?php
 require_once __DIR__ . '/../system/auth.php';
 $page = pata_page_start();
+
+$total_items = 0;
+$low_stock_count = 0;
+$open_requests_count = 0;
+$active_pets_count = 0;
+$quarantine_pets_count = 0;
+
+try {
+    $db = pata_db();
+    $total_items = (int) $db->query('SELECT COUNT(*) FROM "deposit_items"')->fetchColumn();
+    $low_stock_count = (int) $db->query('SELECT COUNT(*) FROM "deposit_items" WHERE "quantity" < "min_quantity"')->fetchColumn();
+    $open_requests_count = (int) $db->query('SELECT COUNT(*) FROM "service_records" WHERE "animal_found" IS NULL')->fetchColumn();
+    $active_pets_count = (int) $db->query('SELECT COUNT(*) FROM "pets" WHERE "status" = \'Ativo\' AND "euthanasia" = FALSE')->fetchColumn();
+    $quarantine_pets_count = (int) $db->query('SELECT COUNT(*) FROM "pets" WHERE "status" = \'Quarentena\' AND "euthanasia" = FALSE')->fetchColumn();
+} catch (Throwable $e) {
+    // Fallback
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -16,31 +33,41 @@ require_once(__DIR__ . '/components/head.php');
         <?php
             echo(component_card(
                 "Fichas de atendimento",
-                "12", 
+                (string) $open_requests_count, 
                 "🚐", 
-                "Solicitacoes abertas",
+                "Solicitações em aberto",
                 "#e8f4f8", 
                 "#212529",
                 "transparent",
                 "/dispatch"
             ));
 
+            $pets_desc = "Sem animais em quarentena";
+            if ($quarantine_pets_count > 0) {
+                $pets_desc = "<b>{$quarantine_pets_count} em quarentena</b>";
+            }
+
             echo(component_card(
                 "Listagem de animais", 
-                "487", 
+                (string) $active_pets_count, 
                 "🐶", 
-                "+2.5% nos últimos 6 meses", 
+                $pets_desc, 
                 "#e8f4f8", 
                 "#212529",
                 "transparent",
                 "/pets"
             ));
 
+            $almoxarife_desc = "Todos os níveis normais";
+            if ($low_stock_count > 0) {
+                $almoxarife_desc = "<b><font color=#fa5252>{$low_stock_count}</font> itens abaixo do mínimo</b>";
+            }
+
             echo(component_card(
                 "Almoxarífe", 
-                "8140 items", 
+                "{$total_items} itens", 
                 "👥", 
-                "<b>Apenas <font color=red>2</font> itens X restantes</b>", 
+                $almoxarife_desc, 
                 "#e8f4f8", 
                 "#212529",
                 "transparent",
