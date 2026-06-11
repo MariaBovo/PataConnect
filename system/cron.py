@@ -1,6 +1,7 @@
 from datetime import date
 from analytics.dbutils import *
 from analytics.models import *
+from system.ipc import IPC
 
 def run_daily_batch_process(db_path: str) -> None:
     """
@@ -28,6 +29,22 @@ def run_daily_batch_process(db_path: str) -> None:
         
     print(f"Batch process complete. {len(daily_predictions)} animal profiles updated.")
 
+
+@IPC.publish
+def run_daily_batch(db_path: str = None) -> dict[str, Any]:
+    if db_path is None:
+        import os
+        from pathlib import Path
+        PROJECT_ROOT = Path(__file__).resolve().parents[1]
+        db_path = str(PROJECT_ROOT / "storage" / "database.sqlite")
+        
+    try:
+        run_daily_batch_process(db_path)
+        return {"status": "success", "message": "Batch process completed successfully."}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
 if __name__ == "__main__":
     # run_daily_batch_process('canil.db')
-    pass
+    pass

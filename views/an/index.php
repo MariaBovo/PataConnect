@@ -1,9 +1,15 @@
 <?php
 require_once __DIR__ . '/../../system/auth.php';
+require_once __DIR__ . '/../../utils/ipc.php';
 $page = pata_page_start();
 
 if ($page['error'] === null && $page['notice'] === null && $page['method'] === 'POST' && $page['action'] === 'refresh_forecast') {
-    $page['notice'] = 'Previsao de estoque reidratada nesta pagina.';
+    $result = callpy('generate_forecast', ['db_path' => null], __DIR__ . '/../../main.py');
+    if (isset($result['error'])) {
+        $page['error'] = 'Falha ao atualizar previsão: ' . ($result['details'] ?? $result['error']);
+    } else {
+        $page['notice'] = 'Previsao de estoque reidratada nesta pagina.';
+    }
 }
 ?>
 <!DOCTYPE html>

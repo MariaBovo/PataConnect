@@ -77,16 +77,16 @@ require_once(__DIR__ . '/../components/head.php');
                 "transparent",
                 "/pets/quarentena?from=dispatch"
             ));
-            echo(component_card(
-                "Listagem de animais", 
-                "NÃO RESGATADOS", 
-                "", 
-                "",  
-                "#212529",
-                "#e8f4f8",
-                "transparent",
-                "/dispatch/ignored"
-            ));
+            //echo(component_card(
+            //    "Listagem de animais", 
+            //    "NÃO RESGATADOS", 
+            //    "", 
+            //    "",  
+            //    "#212529",
+            //    "#e8f4f8",
+            //    "transparent",
+            //    "/dispatch/ignored"
+            //));
         ?>
     </div>
     <hr style="border-color: #333; margin-bottom: 2rem;">

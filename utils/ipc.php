@@ -1,6 +1,11 @@
 <?php
 function callpy(string $call, mixed $parameters, string $ipc_path = '../../system/ipc.py') {
-    $command = escapeshellcmd("python " . $ipc_path);
+    $venv_python = PHP_OS_FAMILY === 'Windows'
+        ? __DIR__ . '/../.venv/Scripts/python.exe'
+        : __DIR__ . '/../.venv/bin/python';
+
+    $python_bin = file_exists($venv_python) ? $venv_python : 'python';
+    $command = escapeshellcmd($python_bin . " " . $ipc_path);
 
     $descriptors = [
         0 => ["pipe", "r"], // STDIN

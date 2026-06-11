@@ -1,0 +1,722 @@
+{
+  "generated_at": "2026-06-11",
+  "horizon_days": 30,
+  "model": {
+    "name": "InventoryConsumptionModel",
+    "type": "ridge_regression_baseline",
+    "backend": "sklearn_ridge",
+    "target": "daily_consumption_to_days_remaining",
+    "training_rows": 420
+  },
+  "summary": {
+    "critical_items": 2,
+    "warning_items": 0,
+    "next_purchase_priority": "Agua sanitaria"
+  },
+  "stock_forecast": [
+    {
+      "item": "bleach_liters",
+      "label": "Agua sanitaria",
+      "unit": "litros",
+      "current_stock": 19.0,
+      "average_daily_consumption": 11.84,
+      "days_remaining": 2.0,
+      "replenishment_days": 4,
+      "reorder_threshold_days": 7,
+      "status": "critical",
+      "recommended_reorder_quantity": 128.22,
+      "projected_stock_30d": 0.0,
+      "mae_last_30_days": 0.56
+    },
+    {
+      "item": "feed_kg",
+      "label": "Racao",
+      "unit": "kg",
+      "current_stock": 185.0,
+      "average_daily_consumption": 28.51,
+      "days_remaining": 7.0,
+      "replenishment_days": 5,
+      "reorder_threshold_days": 8,
+      "status": "critical",
+      "recommended_reorder_quantity": 177.39,
+      "projected_stock_30d": 0.0,
+      "mae_last_30_days": 1.89
+    },
+    {
+      "item": "vaccine_doses",
+      "label": "Vacinas",
+      "unit": "doses",
+      "current_stock": 40.0,
+      "average_daily_consumption": 0.0,
+      "days_remaining": 141.4,
+      "replenishment_days": 10,
+      "reorder_threshold_days": 13,
+      "status": "ok",
+      "recommended_reorder_quantity": 0.0,
+      "projected_stock_30d": 37.64,
+      "mae_last_30_days": 0.94
+    }
+  ],
+  "daily_consumption_forecast": [
+    {
+      "date": "2026-05-22",
+      "item": "bleach_liters",
+      "label": "Agua sanitaria",
+      "unit": "litros",
+      "predicted_consumption": 10.91
+    },
+    {
+      "date": "2026-05-22",
+      "item": "feed_kg",
+      "label": "Racao",
+      "unit": "kg",
+      "predicted_consumption": 27.84
+    },
+    {
+      "date": "2026-05-22",
+      "item": "vaccine_doses",
+      "label": "Vacinas",
+      "unit": "doses",
+      "predicted_consumption": 0.0
+    },
+    {
+      "date": "2026-05-23",
+      "item": "bleach_liters",
+      "label": "Agua sanitaria",
+      "unit": "litros",
+      "predicted_consumption": 10.58
+    },
+    {
+      "date": "2026-05-23",
+      "item": "feed_kg",
+      "label": "Racao",
+      "unit": "kg",
+      "predicted_consumption": 27.63
+    },
+    {
+      "date": "2026-05-23",
+      "item": "vaccine_doses",
+      "label": "Vacinas",
+      "unit": "doses",
+      "predicted_consumption": 0.0
+    },
+    {
+      "date": "2026-05-24",
+      "item": "bleach_liters",
+      "label": "Agua sanitaria",
+      "unit": "litros",
+      "predicted_consumption": 10.98
+    },
+    {
+      "date": "2026-05-24",
+      "item": "feed_kg",
+      "label": "Racao",
+      "unit": "kg",
+      "predicted_consumption": 27.85
+    },
+    {
+      "date": "2026-05-24",
+      "item": "vaccine_doses",
+      "label": "Vacinas",
+      "unit": "doses",
+      "predicted_consumption": 0.0
+    },
+    {
+      "date": "2026-05-25",
+      "item": "bleach_liters",
+      "label": "Agua sanitaria",
+      "unit": "litros",
+      "predicted_consumption": 10.53
+    },
+    {
+      "date": "2026-05-25",
+      "item": "feed_kg",
+      "label": "Racao",
+      "unit": "kg",
+      "predicted_consumption": 27.66
+    },
+    {
+      "date": "2026-05-25",
+      "item": "vaccine_doses",
+      "label": "Vacinas",
+      "unit": "doses",
+      "predicted_consumption": 0.0
+    },
+    {
+      "date": "2026-05-26",
+      "item": "bleach_liters",
+      "label": "Agua sanitaria",
+      "unit": "litros",
+      "predicted_consumption": 12.6
+    },
+    {
+      "date": "2026-05-26",
+      "item": "feed_kg",
+      "label": "Racao",
+      "unit": "kg",
+      "predicted_consumption": 29.29
+    },
+    {
+      "date": "2026-05-26",
+      "item": "vaccine_doses",
+      "label": "Vacinas",
+      "unit": "doses",
+      "predicted_consumption": 0.0
+    },
+    {
+      "date": "2026-05-27",
+      "item": "bleach_liters",
+      "label": "Agua sanitaria",
+      "unit": "litros",
+      "predicted_consumption": 14.64
+    },
+    {
+      "date": "2026-05-27",
+      "item": "feed_kg",
+      "label": "Racao",
+      "unit": "kg",
+      "predicted_consumption": 30.27
+    },
+    {
+      "date": "2026-05-27",
+      "item": "vaccine_doses",
+      "label": "Vacinas",
+      "unit": "doses",
+      "predicted_consumption": 0.0
+    },
+    {
+      "date": "2026-05-28",
+      "item": "bleach_liters",
+      "label": "Agua sanitaria",
+      "unit": "litros",
+      "predicted_consumption": 12.67
+    },
+    {
+      "date": "2026-05-28",
+      "item": "feed_kg",
+      "label": "Racao",
+      "unit": "kg",
+      "predicted_consumption": 29.05
+    },
+    {
+      "date": "2026-05-28",
+      "item": "vaccine_doses",
+      "label": "Vacinas",
+      "unit": "doses",
+      "predicted_consumption": 0.0
+    },
+    {
+      "date": "2026-05-29",
+      "item": "bleach_liters",
+      "label": "Agua sanitaria",
+      "unit": "litros",
+      "predicted_consumption": 14.86
+    },
+    {
+      "date": "2026-05-29",
+      "item": "feed_kg",
+      "label": "Racao",
+      "unit": "kg",
+      "predicted_consumption": 29.73
+    },
+    {
+      "date": "2026-05-29",
+      "item": "vaccine_doses",
+      "label": "Vacinas",
+      "unit": "doses",
+      "predicted_consumption": 0.0
+    },
+    {
+      "date": "2026-05-30",
+      "item": "bleach_liters",
+      "label": "Agua sanitaria",
+      "unit": "litros",
+      "predicted_consumption": 12.79
+    },
+    {
+      "date": "2026-05-30",
+      "item": "feed_kg",
+      "label": "Racao",
+      "unit": "kg",
+      "predicted_consumption": 29.84
+    },
+    {
+      "date": "2026-05-30",
+      "item": "vaccine_doses",
+      "label": "Vacinas",
+      "unit": "doses",
+      "predicted_consumption": 0.0
+    },
+    {
+      "date": "2026-05-31",
+      "item": "bleach_liters",
+      "label": "Agua sanitaria",
+      "unit": "litros",
+      "predicted_consumption": 14.82
+    },
+    {
+      "date": "2026-05-31",
+      "item": "feed_kg",
+      "label": "Racao",
+      "unit": "kg",
+      "predicted_consumption": 30.33
+    },
+    {
+      "date": "2026-05-31",
+      "item": "vaccine_doses",
+      "label": "Vacinas",
+      "unit": "doses",
+      "predicted_consumption": 0.0
+    },
+    {
+      "date": "2026-06-01",
+      "item": "bleach_liters",
+      "label": "Agua sanitaria",
+      "unit": "litros",
+      "predicted_consumption": 14.44
+    },
+    {
+      "date": "2026-06-01",
+      "item": "feed_kg",
+      "label": "Racao",
+      "unit": "kg",
+      "predicted_consumption": 32.3
+    },
+    {
+      "date": "2026-06-01",
+      "item": "vaccine_doses",
+      "label": "Vacinas",
+      "unit": "doses",
+      "predicted_consumption": 0.0
+    },
+    {
+      "date": "2026-06-02",
+      "item": "bleach_liters",
+      "label": "Agua sanitaria",
+      "unit": "litros",
+      "predicted_consumption": 17.0
+    },
+    {
+      "date": "2026-06-02",
+      "item": "feed_kg",
+      "label": "Racao",
+      "unit": "kg",
+      "predicted_consumption": 33.06
+    },
+    {
+      "date": "2026-06-02",
+      "item": "vaccine_doses",
+      "label": "Vacinas",
+      "unit": "doses",
+      "predicted_consumption": 0.0
+    },
+    {
+      "date": "2026-06-03",
+      "item": "bleach_liters",
+      "label": "Agua sanitaria",
+      "unit": "litros",
+      "predicted_consumption": 14.28
+    },
+    {
+      "date": "2026-06-03",
+      "item": "feed_kg",
+      "label": "Racao",
+      "unit": "kg",
+      "predicted_consumption": 33.64
+    },
+    {
+      "date": "2026-06-03",
+      "item": "vaccine_doses",
+      "label": "Vacinas",
+      "unit": "doses",
+      "predicted_consumption": 0.0
+    },
+    {
+      "date": "2026-06-04",
+      "item": "bleach_liters",
+      "label": "Agua sanitaria",
+      "unit": "litros",
+      "predicted_consumption": 16.28
+    },
+    {
+      "date": "2026-06-04",
+      "item": "feed_kg",
+      "label": "Racao",
+      "unit": "kg",
+      "predicted_consumption": 34.3
+    },
+    {
+      "date": "2026-06-04",
+      "item": "vaccine_doses",
+      "label": "Vacinas",
+      "unit": "doses",
+      "predicted_consumption": 0.0
+    },
+    {
+      "date": "2026-06-05",
+      "item": "bleach_liters",
+      "label": "Agua sanitaria",
+      "unit": "litros",
+      "predicted_consumption": 14.49
+    },
+    {
+      "date": "2026-06-05",
+      "item": "feed_kg",
+      "label": "Racao",
+      "unit": "kg",
+      "predicted_consumption": 33.88
+    },
+    {
+      "date": "2026-06-05",
+      "item": "vaccine_doses",
+      "label": "Vacinas",
+      "unit": "doses",
+      "predicted_consumption": 0.0
+    },
+    {
+      "date": "2026-06-06",
+      "item": "bleach_liters",
+      "label": "Agua sanitaria",
+      "unit": "litros",
+      "predicted_consumption": 14.58
+    },
+    {
+      "date": "2026-06-06",
+      "item": "feed_kg",
+      "label": "Racao",
+      "unit": "kg",
+      "predicted_consumption": 34.71
+    },
+    {
+      "date": "2026-06-06",
+      "item": "vaccine_doses",
+      "label": "Vacinas",
+      "unit": "doses",
+      "predicted_consumption": 0.0
+    },
+    {
+      "date": "2026-06-07",
+      "item": "bleach_liters",
+      "label": "Agua sanitaria",
+      "unit": "litros",
+      "predicted_consumption": 14.37
+    },
+    {
+      "date": "2026-06-07",
+      "item": "feed_kg",
+      "label": "Racao",
+      "unit": "kg",
+      "predicted_consumption": 34.77
+    },
+    {
+      "date": "2026-06-07",
+      "item": "vaccine_doses",
+      "label": "Vacinas",
+      "unit": "doses",
+      "predicted_consumption": 0.0
+    },
+    {
+      "date": "2026-06-08",
+      "item": "bleach_liters",
+      "label": "Agua sanitaria",
+      "unit": "litros",
+      "predicted_consumption": 14.12
+    },
+    {
+      "date": "2026-06-08",
+      "item": "feed_kg",
+      "label": "Racao",
+      "unit": "kg",
+      "predicted_consumption": 33.91
+    },
+    {
+      "date": "2026-06-08",
+      "item": "vaccine_doses",
+      "label": "Vacinas",
+      "unit": "doses",
+      "predicted_consumption": 0.0
+    },
+    {
+      "date": "2026-06-09",
+      "item": "bleach_liters",
+      "label": "Agua sanitaria",
+      "unit": "litros",
+      "predicted_consumption": 16.43
+    },
+    {
+      "date": "2026-06-09",
+      "item": "feed_kg",
+      "label": "Racao",
+      "unit": "kg",
+      "predicted_consumption": 34.07
+    },
+    {
+      "date": "2026-06-09",
+      "item": "vaccine_doses",
+      "label": "Vacinas",
+      "unit": "doses",
+      "predicted_consumption": 0.0
+    },
+    {
+      "date": "2026-06-10",
+      "item": "bleach_liters",
+      "label": "Agua sanitaria",
+      "unit": "litros",
+      "predicted_consumption": 16.41
+    },
+    {
+      "date": "2026-06-10",
+      "item": "feed_kg",
+      "label": "Racao",
+      "unit": "kg",
+      "predicted_consumption": 34.58
+    },
+    {
+      "date": "2026-06-10",
+      "item": "vaccine_doses",
+      "label": "Vacinas",
+      "unit": "doses",
+      "predicted_consumption": 0.0
+    },
+    {
+      "date": "2026-06-11",
+      "item": "bleach_liters",
+      "label": "Agua sanitaria",
+      "unit": "litros",
+      "predicted_consumption": 14.34
+    },
+    {
+      "date": "2026-06-11",
+      "item": "feed_kg",
+      "label": "Racao",
+      "unit": "kg",
+      "predicted_consumption": 32.91
+    },
+    {
+      "date": "2026-06-11",
+      "item": "vaccine_doses",
+      "label": "Vacinas",
+      "unit": "doses",
+      "predicted_consumption": 0.0
+    },
+    {
+      "date": "2026-06-12",
+      "item": "bleach_liters",
+      "label": "Agua sanitaria",
+      "unit": "litros",
+      "predicted_consumption": 13.91
+    },
+    {
+      "date": "2026-06-12",
+      "item": "feed_kg",
+      "label": "Racao",
+      "unit": "kg",
+      "predicted_consumption": 34.05
+    },
+    {
+      "date": "2026-06-12",
+      "item": "vaccine_doses",
+      "label": "Vacinas",
+      "unit": "doses",
+      "predicted_consumption": 0.0
+    },
+    {
+      "date": "2026-06-13",
+      "item": "bleach_liters",
+      "label": "Agua sanitaria",
+      "unit": "litros",
+      "predicted_consumption": 14.42
+    },
+    {
+      "date": "2026-06-13",
+      "item": "feed_kg",
+      "label": "Racao",
+      "unit": "kg",
+      "predicted_consumption": 32.7
+    },
+    {
+      "date": "2026-06-13",
+      "item": "vaccine_doses",
+      "label": "Vacinas",
+      "unit": "doses",
+      "predicted_consumption": 0.0
+    },
+    {
+      "date": "2026-06-14",
+      "item": "bleach_liters",
+      "label": "Agua sanitaria",
+      "unit": "litros",
+      "predicted_consumption": 16.43
+    },
+    {
+      "date": "2026-06-14",
+      "item": "feed_kg",
+      "label": "Racao",
+      "unit": "kg",
+      "predicted_consumption": 34.48
+    },
+    {
+      "date": "2026-06-14",
+      "item": "vaccine_doses",
+      "label": "Vacinas",
+      "unit": "doses",
+      "predicted_consumption": 0.0
+    },
+    {
+      "date": "2026-06-15",
+      "item": "bleach_liters",
+      "label": "Agua sanitaria",
+      "unit": "litros",
+      "predicted_consumption": 22.55
+    },
+    {
+      "date": "2026-06-15",
+      "item": "feed_kg",
+      "label": "Racao",
+      "unit": "kg",
+      "predicted_consumption": 33.48
+    },
+    {
+      "date": "2026-06-15",
+      "item": "vaccine_doses",
+      "label": "Vacinas",
+      "unit": "doses",
+      "predicted_consumption": 0.05
+    },
+    {
+      "date": "2026-06-16",
+      "item": "bleach_liters",
+      "label": "Agua sanitaria",
+      "unit": "litros",
+      "predicted_consumption": 22.66
+    },
+    {
+      "date": "2026-06-16",
+      "item": "feed_kg",
+      "label": "Racao",
+      "unit": "kg",
+      "predicted_consumption": 33.15
+    },
+    {
+      "date": "2026-06-16",
+      "item": "vaccine_doses",
+      "label": "Vacinas",
+      "unit": "doses",
+      "predicted_consumption": 0.43
+    },
+    {
+      "date": "2026-06-17",
+      "item": "bleach_liters",
+      "label": "Agua sanitaria",
+      "unit": "litros",
+      "predicted_consumption": 22.65
+    },
+    {
+      "date": "2026-06-17",
+      "item": "feed_kg",
+      "label": "Racao",
+      "unit": "kg",
+      "predicted_consumption": 32.72
+    },
+    {
+      "date": "2026-06-17",
+      "item": "vaccine_doses",
+      "label": "Vacinas",
+      "unit": "doses",
+      "predicted_consumption": 0.24
+    },
+    {
+      "date": "2026-06-18",
+      "item": "bleach_liters",
+      "label": "Agua sanitaria",
+      "unit": "litros",
+      "predicted_consumption": 25.21
+    },
+    {
+      "date": "2026-06-18",
+      "item": "feed_kg",
+      "label": "Racao",
+      "unit": "kg",
+      "predicted_consumption": 33.95
+    },
+    {
+      "date": "2026-06-18",
+      "item": "vaccine_doses",
+      "label": "Vacinas",
+      "unit": "doses",
+      "predicted_consumption": 0.84
+    },
+    {
+      "date": "2026-06-19",
+      "item": "bleach_liters",
+      "label": "Agua sanitaria",
+      "unit": "litros",
+      "predicted_consumption": 24.64
+    },
+    {
+      "date": "2026-06-19",
+      "item": "feed_kg",
+      "label": "Racao",
+      "unit": "kg",
+      "predicted_consumption": 34.4
+    },
+    {
+      "date": "2026-06-19",
+      "item": "vaccine_doses",
+      "label": "Vacinas",
+      "unit": "doses",
+      "predicted_consumption": 0.81
+    },
+    {
+      "date": "2026-06-20",
+      "item": "bleach_liters",
+      "label": "Agua sanitaria",
+      "unit": "litros",
+      "predicted_consumption": 24.64
+    },
+    {
+      "date": "2026-06-20",
+      "item": "feed_kg",
+      "label": "Racao",
+      "unit": "kg",
+      "predicted_consumption": 35.61
+    },
+    {
+      "date": "2026-06-20",
+      "item": "vaccine_doses",
+      "label": "Vacinas",
+      "unit": "doses",
+      "predicted_consumption": 0.0
+    }
+  ],
+  "vaccine_protocol": [
+    {
+      "species": "Caninos",
+      "vaccines": [
+        "cinomose",
+        "hepatite canina (adenovirus tipo 1)",
+        "parvovirose canina",
+        "coronavirus canino",
+        "infeccoes respiratorias por adenovirus tipo 2"
+      ],
+      "rule": "Filhotes: 3 doses; adultos novos: 2 doses; adultos residentes: 1 dose anual."
+    },
+    {
+      "species": "Felinos",
+      "vaccines": [
+        "vacina V5"
+      ],
+      "rule": "Filhotes: 3 doses; adultos novos: 2 doses; adultos residentes: 1 dose anual."
+    },
+    {
+      "species": "Equinos",
+      "vaccines": [
+        "influenza equina",
+        "rinopneumonite equina (herpesvirus 1 e 4)",
+        "encefalomielite equina (leste e oeste)",
+        "tetano"
+      ],
+      "rule": "Atendimento externo: 1 dose anual; nao conta para lotacao, racao ou limpeza do canil."
+    }
+  ]
+}

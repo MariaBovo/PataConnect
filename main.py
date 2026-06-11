@@ -2,6 +2,9 @@ import sys
 import json
 from system.ipc import IPC
 
+# Register functions
+import analytics.data_pipeline
+import system.cron
 
 
 if __name__ == '__main__':

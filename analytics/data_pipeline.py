@@ -17,6 +17,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from analytics.models import InventoryConsumptionModel
+from system.ipc import IPC
 from analytics.synthetic_data import (
     DATA_DIR,
     DEFAULT_REPLENISHMENT_DAYS,
@@ -107,6 +108,7 @@ def run_pipeline(
     history_days: int = 420,
     forecast_days: int = 30,
     seed: int = 42,
+    stock_levels: dict[str, float] | None = None,
 ) -> dict[str, Any]:
     history_df, future_df = load_or_generate_datasets(
         history_path=history_path,
@@ -115,7 +117,7 @@ def run_pipeline(
         forecast_days=forecast_days,
         seed=seed,
     )
-    return build_forecast_payload(history_df, future_df)
+    return build_forecast_payload(history_df, future_df, stock_levels=stock_levels)
 
 
 def write_stdout(payload: dict[str, Any], pretty: bool = False) -> None:
@@ -315,3 +317,39 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+
+@IPC.publish
+def generate_forecast(db_path: str = None) -> dict[str, Any]:
+    from system.condb import create_connection
+    from analytics.dbutils import extract_stock_levels
+    import json
+    
+    if db_path is None:
+        db_path = str(PROJECT_ROOT / "storage" / "database.sqlite")
+        
+    try:
+        with create_connection(db_path) as conn:
+            stock_levels = extract_stock_levels(conn)
+    except Exception as e:
+        sys.stderr.write(f"DB Error: {str(e)}\n")
+        stock_levels = None
+        
+    history_path = DATA_DIR / "synthetic_inventory_history.csv"
+    future_path = DATA_DIR / "synthetic_inventory_future.csv"
+    
+    payload = run_pipeline(
+        history_path=history_path,
+        future_path=future_path,
+        stock_levels=stock_levels
+    )
+    
+    artifacts_dir = PROJECT_ROOT / "analytics" / "artifacts"
+    artifacts_dir.mkdir(parents=True, exist_ok=True)
+    forecast_path = artifacts_dir / "stock_forecast.json"
+    
+    with open(forecast_path, "w", encoding="utf-8") as f:
+        json.dump(payload, f, ensure_ascii=False, indent=2)
+        
+    return {"status": "success", "file": str(forecast_path)}
+

@@ -82,96 +82,144 @@ require_once(__DIR__ . '/components/head.php');
                 "#e8f4f8",
                 "#212529",
                 "transparent",
-                "/analytics"
+                "/an"
             ));
         ?>
     </div>
     <hr>
 
-    <div class="kennel-flow-dashboard">
+    <!-- <div class="kennel-flow-dashboard">
+        <?php
+        $forecast_path = __DIR__ . '/../analytics/artifacts/stock_forecast.json';
+        $forecast = null;
+        if (file_exists($forecast_path)) {
+            $forecast = json_decode(file_get_contents($forecast_path), true);
+        }
+
+        $sourceData = [];
+        if ($forecast && isset($forecast['daily_consumption_forecast'])) {
+            $daily = $forecast['daily_consumption_forecast'];
+            $grouped = [];
+            foreach ($daily as $row) {
+                $date = $row['date'];
+                $item = $row['item'];
+                $val = (float) $row['predicted_consumption'];
+                if (!isset($grouped[$date])) {
+                    $grouped[$date] = [
+                        'feed_kg' => 0.0,
+                        'bleach_liters' => 0.0,
+                        'vaccine_doses' => 0.0
+                    ];
+                }
+                $grouped[$date][$item] = $val;
+            }
+            
+            ksort($grouped);
+            $sliced = array_slice($grouped, 0, 8, true);
+            
+            $months_pt = [
+                '01' => 'Jan', '02' => 'Fev', '03' => 'Mar', '04' => 'Abr', '05' => 'Mai', '06' => 'Jun',
+                '07' => 'Jul', '08' => 'Ago', '09' => 'Set', '10' => 'Out', '11' => 'Nov', '12' => 'Dez'
+            ];
+            foreach ($sliced as $dateStr => $items) {
+                $parts = explode('-', $dateStr);
+                $day = $parts[2] ?? '';
+                $m = $parts[1] ?? '';
+                $label = $day . '/' . ($months_pt[$m] ?? $m);
+                $sourceData[$label] = [
+                    'feed_kg' => $items['feed_kg'],
+                    'bleach_liters' => $items['bleach_liters'],
+                    'vaccine_doses' => $items['vaccine_doses']
+                ];
+            }
+        }
+
+        if (empty($sourceData)) {
+            $sourceData = [
+                '11/Jun' => ['feed_kg' => 28.5, 'bleach_liters' => 12.0, 'vaccine_doses' => 0.0],
+                '12/Jun' => ['feed_kg' => 29.0, 'bleach_liters' => 11.5, 'vaccine_doses' => 1.0],
+                '13/Jun' => ['feed_kg' => 28.2, 'bleach_liters' => 12.5, 'vaccine_doses' => 0.0],
+                '14/Jun' => ['feed_kg' => 30.1, 'bleach_liters' => 13.0, 'vaccine_doses' => 0.0],
+                '15/Jun' => ['feed_kg' => 31.0, 'bleach_liters' => 14.5, 'vaccine_doses' => 2.0],
+                '16/Jun' => ['feed_kg' => 29.5, 'bleach_liters' => 12.0, 'vaccine_doses' => 0.0],
+                '17/Jun' => ['feed_kg' => 30.4, 'bleach_liters' => 11.0, 'vaccine_doses' => 0.0],
+                '18/Jun' => ['feed_kg' => 31.2, 'bleach_liters' => 12.8, 'vaccine_doses' => 1.0]
+            ];
+        }
+
+        $maxVolume = 10;
+        foreach ($sourceData as $label => $values) {
+            $total = array_sum($values);
+            if ($total > $maxVolume) {
+                $maxVolume = $total;
+            }
+        }
+        $maxVolume = ceil($maxVolume * 1.1);
+        $y_steps = 10;
+        $step_size = ceil($maxVolume / $y_steps);
+        $step_size = max(1, $step_size);
+        $maxVolume = $step_size * $y_steps;
+        ?>
         <div class="header-panel">
-            <div class="legend">Fluxo de animais
-                <div class="legend-item"><div class="legend-box bg-bull"></div> [↑ Adoção]</div>
-                <div class="legend-item"><div class="legend-box bg-bear"></div> [↓ Resgate]</div>
-                <div class="legend-item"><div class="legend-box bg-prediction"></div> [→ Predição]</div>
+            <div class="legend">Consumo Diário de Insumos (Previsão IA)
+                <div class="legend-item"><div class="legend-box bg-bull"></div> Ração (kg)</div>
+                <div class="legend-item"><div class="legend-box bg-bear"></div> Água Sanitária (L)</div>
+                <div class="legend-item"><div class="legend-box bg-prediction"></div> Vacinas (doses)</div>
             </div>
         </div>
 
         <div class="chart-viewport">
-            <!-- Y Axis -->
             <div class="y-axis">
                 <div class="y-grid-lines">
-                    <div class="y-grid-line" style="margin-top: calc( (450-450)/450 * 100%)"></div>
-                    <div class="y-grid-line" style="margin-top: calc( (450-400)/450 * 100%)"></div>
-                    <div class="y-grid-line" style="margin-top: calc( (450-350)/450 * 100%)"></div>
-                    <div class="y-grid-line" style="margin-top: calc( (450-300)/450 * 100%)"></div>
-                    <div class="y-grid-line" style="margin-top: calc( (450-250)/450 * 100%)"></div>
-                    <div class="y-grid-line" style="margin-top: calc( (450-200)/450 * 100%)"></div>
-                    <div class="y-grid-line" style="margin-top: calc( (450-150)/450 * 100%)"></div>
-                    <div class="y-grid-line" style="margin-top: calc( (450-100)/450 * 100%)"></div>
-                    <div class="y-grid-line" style="margin-top: calc( (450-50)/450 * 100%)"></div>
-                    <div class="y-grid-line" style="margin-top: calc( (450-0)/450 * 100%)"></div>
+                    <?php for ($i = $y_steps; $i >= 0; $i--): ?>
+                        <div class="y-grid-line" style="margin-top: calc( (<?php echo $maxVolume; ?> - <?php echo $i * $step_size; ?>)/<?php echo $maxVolume; ?> * 100%)"></div>
+                    <?php endfor; ?>
                 </div>
-                <span>0</span><span>50</span><span>100</span><span>150</span><span>200</span><span>250</span><span>300</span><span>350</span><span>400</span><span>450</span>
+                <?php for ($i = $y_steps; $i >= 0; $i--): ?>
+                    <span><?php echo $i * $step_size; ?></span>
+                <?php endfor; ?>
             </div>
 
-            <!-- Main Chart Area -->
             <div class="chart-container">
-                <div class="prediction-overlay" style="left: 62.5%; width: 37.5%;"></div>
+                <div class="prediction-overlay" style="left: 0%; width: 100%;"></div>
                 <?php
-                $sourceData = [
-                    'Jan' => [85, 120],
-                    'Fev' => [140, 95],
-                    'Mar' => [160, 80],
-                    'Abr' => [110, 150],
-                    'Mai' => [90, 180],
-                    'Jun' => [210, 140],
-                    'Jul' => [230, 160],
-                    'Ago' => [130, 200]
-                ];
-
-                $maxVolume = 450;
-
-                foreach ($sourceData as $month => $flows) {
-                    $intake = $flows[0];
-                    $adoptions = $flows[1];
-                    $totalVolume = $intake + $adoptions;
-                    $netBalance = $adoptions - $intake;
+                foreach ($sourceData as $label => $values) {
+                    $feed = $values['feed_kg'];
+                    $bleach = $values['bleach_liters'];
+                    $vaccine = $values['vaccine_doses'];
+                    $totalVolume = $feed + $bleach + $vaccine;
 
                     // Percentages of total chart height
                     $barHeightPct = ($totalVolume / $maxVolume) * 100;
-                    $intakePct = ($intake / $totalVolume) * 100;
-                    $adoptionPct = ($adoptions / $totalVolume) * 100;
-
-                    // Net Balance Display
-                    $netClass = $netBalance >= 0 ? 'net-bull' : 'net-bear';
-                    $netIcon = $netBalance >= 0 ? '↑' : '↓';
-                    $formattedNet = ($netBalance >= 0 ? '+' : '') . $netBalance;
+                    $feedPct = ($feed / $totalVolume) * 100;
+                    $bleachPct = ($bleach / $totalVolume) * 100;
+                    $vaccinePct = ($vaccine / $totalVolume) * 100;
 
                     echo '<div class="chart-bar-wrapper">';
                     
-                    // Net change indicator above the bar
-                    echo '  <div class="net-change-indicator ' . $netClass . '">';
-                    echo '    <span>' . $netIcon . '</span>';
-                    echo '    <span>' . $formattedNet . '</span>';
+                    // Total label above the bar
+                    echo '  <div class="net-change-indicator net-bull" style="color: var(--text-primary);">';
+                    echo '    <span>' . round($totalVolume, 1) . '</span>';
                     echo '  </div>';
 
                     // The Stacked Volume Bar
                     echo '  <div class="bar-stacked" style="height: ' . $barHeightPct . '%;">';
-                    // Intake segment (Bearish)
-                    echo '    <div class="bar-segment segment-bear" style="height: ' . $intakePct . '%;"></div>';
-                    // Adoption segment (Bullish)
-                    echo '    <div class="bar-segment segment-bull" style="height: ' . $adoptionPct . '%;"></div>';
+                    // Feed segment (Green)
+                    echo '    <div class="bar-segment segment-bull" style="height: ' . $feedPct . '%;" title="Ração: ' . round($feed, 1) . ' kg"></div>';
+                    // Bleach segment (Red)
+                    echo '    <div class="bar-segment segment-bear" style="height: ' . $bleachPct . '%;" title="Água Sanitária: ' . round($bleach, 1) . ' L"></div>';
+                    // Vaccine segment (Orange)
+                    echo '    <div class="bar-segment segment-prediction" style="height: ' . $vaccinePct . '%;" title="Vacinas: ' . round($vaccine, 1) . ' doses"></div>';
                     echo '  </div>';
 
-                    // Month label on X axis
-                    echo '  <div class="x-axis-label">' . $month . '</div>';
+                    // Date label on X axis
+                    echo '  <div class="x-axis-label">' . $label . '</div>';
                     echo '</div>';
                 }
                 ?>
             </div>
         </div>
-    </div>
+    </div>-->
 </body>
 <style>
     .dashboard-grid {
@@ -326,6 +374,7 @@ require_once(__DIR__ . '/components/head.php');
     }
     .segment-bear { background-color: var(--bear-color); }
     .segment-bull { background-color: var(--bull-color); }
+    .segment-prediction { background-color: #ff9900; }
 
     .net-change-indicator {
         position: absolute;

@@ -71,3 +71,32 @@ def load_predictions_to_db(conn: sqlite3.Connection, predictions_df: pd.DataFram
     """Loads the newly calculated daily scores back into the database."""
     predictions_df.to_sql('daily_risk_predictions', conn, if_exists='append', index=False)
     conn.commit()
+
+
+def extract_stock_levels(conn: sqlite3.Connection) -> dict[str, float]:
+    """Queries current stock levels from deposit_items."""
+    cursor = conn.cursor()
+    cursor.execute("SELECT category, SUM(quantity) FROM deposit_items GROUP BY category")
+    rows = cursor.fetchall()
+    
+    # Initialize with default values
+    levels = {
+        "feed_kg": 0.0,
+        "vaccine_doses": 0.0,
+        "bleach_liters": 0.0
+    }
+    
+    # Map category names safely
+    for cat, total in rows:
+        if not cat:
+            continue
+        cat_lower = cat.lower()
+        if "raç" in cat_lower or "rac" in cat_lower or "ra" in cat_lower: # Ração
+            levels["feed_kg"] = float(total)
+        elif "vac" in cat_lower: # Vacina
+            levels["vaccine_doses"] = float(total)
+        elif "limp" in cat_lower or "desinfetante" in cat_lower: # Limpeza
+            levels["bleach_liters"] = float(total)
+            
+    return levels
+
