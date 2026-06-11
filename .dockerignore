@@ -1,0 +1,14 @@
+# Ignore everything by default
+*
+
+# Allow directories
+!analytics/
+!system/
+!utils/
+!views/
+
+# Allow files
+!composer.json
+!requirements.txt
+!index.php
+!main.py
